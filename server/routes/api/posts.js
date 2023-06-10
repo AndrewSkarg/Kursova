@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 // console.log();
 //Get POSTS 
-router.get('/', async(req, res) => {
+router.get('/', async (req, res) => {
     const posts = await loadPostsCollection();
 
     const j = JSON.stringify(posts, null, 2);
@@ -20,7 +20,7 @@ router.get('/', async(req, res) => {
 })
 
 //Add Post
-router.post('/', async(req, res) => {
+router.post('/', async (req, res) => {
     const posts = await loadPostsCollection();
     await db['Dish'].create({
         title: req.body.title,
@@ -32,7 +32,8 @@ router.post('/', async(req, res) => {
 
 
 //Delete Post
-router.delete('/:dish_id', async(req, res) => {
+router.delete('/:dish_id', async (req, res) => {
+
     const posts = await loadPostsCollection();
     await db['Dish'].destroy({
         where: { dish_id: req.params.dish_id }
@@ -44,18 +45,19 @@ router.delete('/:dish_id', async(req, res) => {
 
 async function loadPostsCollection() {
 
-    return db['Dish'].findAll({
-        attributes: ['dish_id', 'title', 'description']
-            // where: {
-            //     [Op.or]: [{
-            //             dish_id: 1,
-            //             dish_id: 2
-            //         }
+    posts = db['Dish'].findAll({ attributes: ['dish_id', 'title', 'description'] });
+    //204	No Content
 
-        //     ]
+    return posts;
+    // where: {
+    //     [Op.or]: [{
+    //             dish_id: 1,
+    //             dish_id: 2
+    //         }
 
-        // }
-    })
+    //     ]
+
+    // }
 
 }
 
