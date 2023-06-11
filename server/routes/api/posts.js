@@ -12,7 +12,9 @@ const router = express.Router();
 //Get POSTS 
 router.get('/', async (req, res) => {
     const posts = await loadPostsCollection();
-
+    // if(posts instanceof Error){
+    //     res.status(500).send('internal error')
+    // }
     const j = JSON.stringify(posts, null, 2);
     console.log('All dishes:', j);
 
@@ -44,8 +46,10 @@ router.delete('/:dish_id', async (req, res) => {
 
 
 async function loadPostsCollection() {
+    
 
     posts = db['Dish'].findAll({ attributes: ['dish_id', 'title', 'description'] });
+        
     //204	No Content
 
     return posts;
