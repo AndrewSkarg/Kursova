@@ -1,0 +1,32 @@
+*{
+        margin: 0;
+        padding: 0;
+        /*  вимкнути підсвічування інпута */
+        outline: none;
+        
+}
+
+
+
+body{
+
+    width: 100%;
+    height:100%;
+    /* якщо не існує того шрифта буде інший */
+    font-family: "Segoe UI",Arial,sans-serif; 
+}
+a:hover{
+    color: rgb(72, 0, 255);
+
+}
+a, a:hover{
+    /* без підкреслення посилань */
+    text-decoration: none; 
+    -webkit-transition: all.50s ease;
+    /* для різних браузерів */
+    -moz-transition: all.50s ease;
+    -o-transition: all.50s ease;
+    -ms-transition: all.50s ease;
+    transition: all.50s ease;
+}
+

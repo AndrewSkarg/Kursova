@@ -40,6 +40,11 @@ class PostService {
     static deletePost(id) {
         return axios.delete(`${url}${id}`);
     }
+
+
+    static addUser(email,password,firstName,lastName){
+        return axios.post({email,password,firstName,lastName});
+    }
 }
 
 export default PostService;
