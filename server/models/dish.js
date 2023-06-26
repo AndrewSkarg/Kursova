@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
         },
         description: {
-            type: Sequelize.STRING,
+            type: Sequelize.ENUM('сніданок','обід','вечеря'),
             allowNull: false,
         },
         portionForeign: {

@@ -8,11 +8,14 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const posts = require('./routes/api/posts');
+const dishes=require('./routes/api/dishes')
 app.use('/api/posts', posts);
+
+app.use('/api/dishes',dishes);
 
 
 const port = process.env.PORT || 5000
-db.sequelize.authenticate()
+db.sequelize.sync({force:false})
     .then(
         function () {
             app.listen(port, () => { console.log('server listening port ' + port); }

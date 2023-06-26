@@ -9,18 +9,7 @@ module.exports = (sequelize, Sequelize) => {
       type:Sequelize.STRING,
       allowNull:false
     },
-    morningPortion: {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-    },
-    afternoonPortion: {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-    },
-    eveningPortion: {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-    }
+    
 
   },
 

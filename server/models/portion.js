@@ -34,11 +34,7 @@ module.exports = (sequelize, Sequelize) => {
             }
         );
 
-        Portion.hasOne(models.Dessert,
-            {
-                foreignKey: 'portionForeign'
-            }
-        );
+        
         Portion.belongsTo(models.Component,
             {
                 foreignKey: 'portionDrinkForeign'
