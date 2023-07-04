@@ -18,26 +18,35 @@ router.post('/register', async (req, res) => {
     try {
         const { email, firstName, lastName, password, title, rank } = req.body;
         const hash = await bcrypt.hash(password, 10);
-        const newUser = await User.create({
-            firstName: firstName,
-            lastName: lastName,
-            password: hash,
-            email: email
+        const isPresent = await User.findOne({
+            where: { email: email }
         });
 
-        await db['UserRole'].create({
-            user: newUser.user_id,
-            role: 1
-        });
-        //'title','rank','user'
-        await db['Position'].create({
-            user: newUser.user_id,
-            title: title,
-            rank: rank
-        });
+        if (isPresent) {
+            res.status(409).json({ error: "User with this email is already registered!" }); //409
+        } else {
+            const newUser = await User.create({
+                firstName: firstName,
+                lastName: lastName,
+                password: hash,
+                email: email
+            });
+
+            await db['UserRole'].create({
+                user: newUser.user_id,
+                role: 1
+            });
+            //'title','rank','user'
+            await db['Position'].create({
+                user: newUser.user_id,
+                title: title,
+                rank: rank
+            });
+            res.status(200).json({msg:'registered'})
+
+        }
 
 
-        res.json("USER REGISTERED");
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -65,17 +74,18 @@ router.post("/login", async (req, res) => {
                     maxAge: 60 * 60 * 24 * 30 * 1000,
                     httpOnly: true,
                 });
-                res.json(user);
+                res.status(200).json(user);
             }
         });
     } catch (err) {
+        
         console.log('unvalid login data');
     }
 });
 
 router.get("/profile", validateToken, async (req, res) => {
     const profile = await getProfile(req.user);
-    res.status(200).json(profile); //401 Unauthorized
+    res.status(200).json(profile);
 });
 
 
@@ -91,22 +101,24 @@ async function getProfile(user) {
             where: {
                 user_id: user.user_id
             },
-            include: {
-                model: db['UserRole'],
-                include: {
+            include: [
+                {
                     model: db['Role'],
                     attributes: ['name']
+                },
+                {
+                    model: db['Position'],
+                    attributes: ['title', 'rank', 'user']
                 }
-            }
-
+            ]
         });
 
-        userDb.position = await db['Position'].findOne({
-            attributes: ['title', 'rank', 'user'],
-            where: {
-                user: user.user_id //on db user change
-            }
-        });
+        // userDb.position = await db['Position'].findOne({
+        //     attributes: ['title', 'rank', 'user'],
+        //     where: {
+        //         user: user.user_id //on db user change
+        //     }
+        // });
 
 
 

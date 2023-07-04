@@ -13,6 +13,7 @@
 // ```javascript
 const express = require('express');
 const { dirname } = require('path');
+const { validateToken } = require('../../JWT');
 const appDir = dirname(require.main.filename); //get current execut file
 const db = require(appDir + '/models');
 const {
@@ -21,6 +22,7 @@ const {
 
 const router = express.Router();
 
+//VALIDATE TOKEN TO functions only for aut-cated
 //Get POSTS
 router.get('/day/:name', async (req, res) => {
     const posts = await loadPostsCollection(req.params.name);
