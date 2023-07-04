@@ -14,6 +14,8 @@ body{
     height:100%;
     /* якщо не існує того шрифта буде інший */
     font-family: "Segoe UI",Arial,sans-serif; 
+    background-color: #dad3d3;
+
 }
 a:hover{
     color: rgb(72, 0, 255);

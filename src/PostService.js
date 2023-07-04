@@ -1,22 +1,26 @@
 import axios from "axios"
 
-const url = 'api/posts/'
+const urlDish = '/api/dishes' ///day/sun
+const urlUser = '/api/users'
 
 class PostService {
     //get Posts
 
-    static getPosts() {
-// eslint-disable-next-line
-        return new Promise( async (resolve, reject) => {
+
+    static getDishes(day) {
+        // eslint-disable-next-line
+        return new Promise(async (resolve, reject) => {
             try {
-// eslint-disable-next-line
-                const res =  await axios.get(url);
+                // eslint-disable-next-line        
+                const res = await axios.get(urlDish + day);  // /day/{day}
                 const data = res.data;
 
-                resolve(data.map(post => ({
-                    ...post,
-                    // createdAt: new Date(post.createdAt)
-                })))
+                resolve(data);
+
+                // resolve(data.map(dishes => ({
+                //     ...dishes,
+                //     // createdAt: new Date(post.createdAt)
+                // })))
             } catch (err) {
                 reject(err);
             }
@@ -24,11 +28,13 @@ class PostService {
 
     }
 
+    
+
 
     //create Posts
-    static insertPost(title, description, portionForeign) {
+    static insertDish(title, description, portionForeign, day) {
 
-        return axios.post(url, {
+        return axios.post(urlDish + day, {
             title: title,
             description: description,
             portionForeign: portionForeign
@@ -37,13 +43,19 @@ class PostService {
     }
 
     //Delete Posts
-    static deletePost(id) {
-        return axios.delete(`${url}${id}`);
+    static deleteDish(id) {
+        return axios.delete(`${urlDish}${id}`);
     }
 
 
-    static addUser(email,password,firstName,lastName){
-        return axios.post({email,password,firstName,lastName});
+    static registerUser(email, password, firstName, lastName,title,rank) {
+        return axios.post(urlUser + '/register', { email, password, firstName, lastName,title,rank });
+    }
+
+
+
+    static loginUser(email, password) {
+        return axios.post(urlUser + '/login', { email, password });
     }
 }
 

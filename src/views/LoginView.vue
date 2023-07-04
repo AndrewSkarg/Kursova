@@ -1,17 +1,55 @@
 <template>
   <div>
     <HeaderComponent />
-    <div class="loginBox">
+    <div id="body">
+      <!-- <div class="loginBox">
       <h1>Login</h1>
-      <input type="text" v-model="email" placeholder="email" />
-      <input type="text" v-model="password" placeholder="password" />
-      <input @click="onLogin" type="submit" value="Login" />
+      <input type="text" v-model="email" placeholder="пошта" />
+      <input type="text" v-model="password" placeholder="пароль" />
+
+      <input @click="loginUser" type="submit" value="Login" />
+    </div> -->
+
+      <div class="container">
+        <h1 class="title">Аутентифікація</h1>
+        <form @submit.prevent="loginUser">
+          <div class="form-group">
+            <label for="username">Email</label>
+            <input
+              type="text"
+              id="email"
+              placeholder="пошта"
+              v-model="email"
+              v-on:input="()=>{this.error=''}"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="пароль"
+              v-model="password"
+              v-on:input="()=>{this.error=''}"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input type="submit" value="Login" />
+          </div>
+        </form>
+        <p class="error">{{ error }}</p>
+        <p>Не маєте акаунту? <a href="/register">Зареєструватися</a></p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import PostService from "../PostService";
+
 export default {
   name: "LoginView",
   components: {
@@ -19,23 +57,27 @@ export default {
   },
   data() {
     return {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
+      error:''
     };
   },
 
   methods: {
-    onLogin() {
-      alert("child component said: " + this.email + " " + this.password);
+    async loginUser() {
+      try {
+        await PostService.loginUser(this.email, this.password);
+        this.$router.push("/profile");
+      
+      } catch (error) {
+        this.error = error.response.data.error;
+        console.log(error);
+      }
     },
   },
 };
 </script>
 
-<style scoped>
-.loginBox {
-  position: relative;
-  margin-left: auto;
-  margin-right: auto;
-}
+<style ref scoped>
+@import url("../assets/css/loginReg.css");
 </style>

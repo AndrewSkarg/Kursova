@@ -14,10 +14,11 @@
       <div>авторизація</div>
     </div> -->
     <div class="panel">
-      <div><router-link to="/"> Страви на сьогодні </router-link></div>
-      <div><router-link to="/"> Прийоми їжі </router-link></div>
+      <div><router-link :to="`/day/`+day"> Страви на сьогодні </router-link></div>
+      <div><router-link to="/"> Графік прийому їжі </router-link></div>
+      <div><router-link to="/"> Книга скарг </router-link></div>
       <div><router-link to="/"> Меню </router-link></div>
-      <div><router-link to="/"> Вихід </router-link></div>
+      <div><router-link to="/register"> Вихід </router-link></div>
     </div>
   </header>
 </template>
@@ -25,6 +26,22 @@
 <script>
 export default {
   name: "HeaderComponent",
+  data() {
+    return {
+      day: String,
+      days: ['sun', 'mon', 'tue', 'wed', 'thur', 'fri', 'sat']
+
+    };
+  },
+    async created() {
+        this.day=this.days[new Date().getDay()];
+
+    },
+methods:{
+    
+}
+
+
 };
 </script>
 
@@ -46,9 +63,6 @@ header {
   width: 100%;
   display: flex;
   justify-content: space-evenly;
-}
-.panel div {
-
 }
 
 a {

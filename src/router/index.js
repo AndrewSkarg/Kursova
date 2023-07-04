@@ -3,19 +3,26 @@ import HomeView from '../views/HomeView.vue'
 import RegistrationView from '../views/RegistrationView.vue'
 import LoginView from '../views/LoginView.vue'
 import DayInfoView from '../views/DayInfoView.vue'
+import ProfileView from '../views/ProfileView.vue'
+
 const routes = [
 
 
- {
+  {
     path: '/',
     name: 'home',
     component: HomeView
   },
 
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView
+  },
 
   {
-    path: '/registration',
-    name: 'registration',
+    path: '/register',
+    name: 'register',
     component: RegistrationView
   },
   {
@@ -26,7 +33,7 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: LoginView
   },
-{
+  {
     path: '/day/:name',
     name: 'day',
     component: DayInfoView
@@ -34,7 +41,7 @@ const routes = [
 
 
 
-    
+
 ]
 
 const router = createRouter({
