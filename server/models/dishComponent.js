@@ -5,14 +5,14 @@
 
 module.exports = (sequelize, Sequelize) => {
     const DishComponent = sequelize.define("DishComponent", {
-        dishForeign: {
+        dishF: {
             type: Sequelize.INTEGER,
             references:{
                 model: 'Dishes',
                 key: 'dish_id'
             }
         },
-        componentForeign: {
+        componentF: {
             type:Sequelize.INTEGER,
             references:{
                 model: 'Components',

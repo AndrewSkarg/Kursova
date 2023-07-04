@@ -1,4 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
+    const { Op } = require('sequelize');
     const Portion = sequelize.define("Portion", {
         portion_id: {
             type: Sequelize.INTEGER,
@@ -6,7 +7,13 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             allowNull: false
         },
-        dayNumForeign: { //foreignKey
+
+        order: {
+            type: Sequelize.ENUM('сніданок', 'обід', 'вечеря'),
+            allowNull: false,
+        },
+
+        dayF: { //foreignKey
             type: Sequelize.INTEGER,
             allowNull: false,
             references: {
@@ -15,12 +22,55 @@ module.exports = (sequelize, Sequelize) => {
             }
         },
 
-        portionDrinkForeign: {
+        portionDrinkF: {
             type: Sequelize.INTEGER,
             allowNull: false,
             references: {
                 model: 'Components',
                 key: 'component_id'
+            }
+        },
+        // portionDishForeign: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: false,
+        //     references: {
+        //         model: 'Dishes',
+        //         key: 'dish_id'
+        //     }
+        // },//'перше','друге','салат','десерт'
+        firstDishF: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Dishes',
+                key: 'dish_id'
+            }
+        },
+
+        secondDishF: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Dishes',
+                key: 'dish_id'
+            }
+        },
+
+
+        dessertDishF: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'Dishes',
+                key: 'dish_id'
+            }
+        },
+        saladDishF: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Dishes',
+                key: 'dish_id'
             }
         }
     },
@@ -28,22 +78,71 @@ module.exports = (sequelize, Sequelize) => {
             timestamps: false
         });
     Portion.associate = function (models) {
-        Portion.hasMany(models.Dish,
+
+
+
+        Portion.belongsTo(models.Component,
             {
-                foreignKey: 'portionForeign'
+                foreignKey: 'portionDrinkF'
             }
         );
 
-        
-        Portion.belongsTo(models.Component,
+        Portion.belongsTo(models.Dish,
             {
-                foreignKey: 'portionDrinkForeign'
+                foreignKey: 'firstDishF',
+                constraints: true,
+                scope: {
+                    kind:
+                    {
+                        [Op.eq]: 'перше'
+                    },
+                },
+            }
+
+        );
+
+        Portion.belongsTo(models.Dish,
+            {
+                foreignKey: 'secondDishF',
+                constraints: true,
+                scope: {
+                    kind:
+                    {
+                        [Op.eq]: 'друге'
+                    },
+                },
+            }
+        );
+
+        Portion.belongsTo(models.Dish,
+            {
+                foreignKey: 'dessertDishF',
+                constraints: true,
+                scope: {
+                    kind:
+                    {
+                        [Op.eq]: 'десерт'
+                    },
+                },
+            }
+        );
+
+        Portion.belongsTo(models.Dish,
+            {
+                foreignKey: 'saladDishF',
+                constraints: true,
+                scope: {
+                    kind:
+                    {
+                        [Op.eq]: 'салат'
+                    },
+                },
             }
         );
 
         Portion.belongsTo(models.Day,
             {
-                foreignKey: 'dayNumForeign'
+                foreignKey: 'dayF'
             }
         ); //!!МАКСИМУМ ДЕНЬ ПОВТОРЮЄТЬСЯ 3 РАЗИ У ТАБЛИЦІ Portion
         // Portion.belongsTo(mo els.Day, {as: 'afternoonPortion'});

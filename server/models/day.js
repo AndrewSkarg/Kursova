@@ -20,7 +20,7 @@ module.exports = (sequelize, Sequelize) => {
     Day.hasMany(
       models.Portion,
       {
-        foreignKey:'dayNumForeign',
+        foreignKey:'dayF',
         as: 'por'
       });
 

@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         },
         rank: {
-            type: Sequelize.STRING,
+            type: Sequelize.ENUM('солдат','сержант','лейтенант','майор','підполковник','полковник'),
             allowNull: false
         },
         user: {

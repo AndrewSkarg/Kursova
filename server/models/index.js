@@ -34,13 +34,27 @@ fs
         db[model.name] = model;
     });
 
+if (db.User.associate) {
+    db.User.associate(db);
+}
+
+if (db.UserRole.associate) {
+    db.UserRole.associate(db);
+}
+
+// Then, associate the Role model
+if (db.Role.associate) {
+    db.Role.associate(db);
+}
+
+// Finally, associate any other models
 Object.keys(db).forEach(modelName => {
-    if (db[modelName].associate) {
-        db[modelName].associate(db);
+    if (modelName !== 'User' && modelName !== 'UserRole' && modelName !== 'Role') {
+        if (db[modelName].associate) {
+            db[modelName].associate(db);
+        }
     }
 });
-
-
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

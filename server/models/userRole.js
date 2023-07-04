@@ -5,7 +5,8 @@ module.exports = (sequelize, Sequelize) => {
             references: {
                 model: 'Users',
                 key: 'user_id'
-            }
+            },
+        allowNull:false
         },
         role:{
             type: Sequelize.INTEGER,

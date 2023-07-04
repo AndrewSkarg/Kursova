@@ -11,18 +11,20 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false,
         },
-        description: {
-            type: Sequelize.ENUM('сніданок','обід','вечеря'),
-            allowNull: false,
-        },
-        portionForeign: {
-            type: Sequelize.INTEGER,
+
+        kind: {
+            type: Sequelize.ENUM('перше', 'друге', 'салат', 'десерт'),
             allowNull: true,
-            references: {
-                key: 'portion_id',
-                model: 'Portions'
-            }
-        }
+        },
+
+        // portionForeign: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: true,
+        //     references: {
+        //         key: 'portion_id',
+        //         model: 'Portions'
+        //     }
+        // }
 
     }, {
         timestamps: false
@@ -32,24 +34,53 @@ module.exports = (sequelize, Sequelize) => {
         Dish.belongsToMany(models.Component,
             {
                 through: models.DishComponent,
-                foreignKey:'dishForeign',
-                otherKey:'componentForeign'
+                foreignKey: 'dishF',
+                otherKey: 'componentF'
             });
 
         // Dish.hasMany(models.DishComponent,
         //     {
-        //         foreignKey: 'dishForeign'
+        //         foreignKey: 'dishF'
         //     }
         // );
 
-        Dish.belongsTo(models.Portion,
-            {
-                foreignKey: 'portionForeign'
+        // Dish.belongsTo(models.Portion,
+        //     {
+        //         foreignKey: 'portionForeign'
 
+        //     }
+        // );
+
+
+        Dish.hasMany(models.Portion,
+            {
+                as: 'firstDishesOfPortions',
+                foreignKey: 'firstDishF'
+            }
+        );
+
+        Dish.hasMany(models.Portion,
+            {
+                as: 'secondDishesOfPortions',
+                foreignKey: 'secondDishF'
+            }
+        );
+
+        Dish.hasMany(models.Portion,
+            {
+                as: 'dessertsOfPortions',
+                foreignKey: 'dessertDishF'
+            }
+        );
+
+        Dish.hasMany(models.Portion,
+            {
+                as: 'saladsOfPortions',
+                foreignKey: 'saladDishF'
             }
         );
         // User.hasMany(models.Role);
-        // User.hasMany(models.Position);
+        // User.hasMany(models.Position);saladDishF
     };
 
     return Dish;

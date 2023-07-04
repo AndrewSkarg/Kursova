@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         },
         description: {
-            type: Sequelize.ENUM('крупи', 'овочі', 'фрукти', 'напої', 'інше'),
+            type: Sequelize.ENUM('крупи', 'овочі', 'фрукти', 'напої', 'інше','спеції'),
             allowNull: false
 
         },
@@ -36,8 +36,8 @@ module.exports = (sequelize, Sequelize) => {
         Component.belongsToMany(models.Dish,
             {
                 through: models.DishComponent,
-                foreignKey:'componentForeign',
-                otherKey:'dishForeign'
+                foreignKey:'componentF',
+                otherKey:'dishF'
             }
         );
         // Component.hasMany(models.DishComponent, {
@@ -46,7 +46,7 @@ module.exports = (sequelize, Sequelize) => {
 
         Component.hasMany(models.Portion,
             {
-                foreignKey: 'portionDrinkForeign'
+                foreignKey: 'portionDrinkF'
             }
         );
     };
