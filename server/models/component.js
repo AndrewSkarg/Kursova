@@ -12,11 +12,11 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
         },
         count: {
-            type: Sequelize.INTEGER,
+            type:Sequelize.DECIMAL(7,3),
             allowNull: false
         },
         priceForUnit: {
-            type: Sequelize.DECIMAL(10, 4),
+            type: Sequelize.DECIMAL(6, 3),
             allowNull: false
         },
         unit: {

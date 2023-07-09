@@ -12,20 +12,23 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 
-const posts = require('./routes/api/posts');
 const dishes = require('./routes/api/dishes');
 const users=require('./routes/api/users');
+const components = require('./routes/api/components');
 
-app.use('/api/posts', posts);
+// app.use('/api/posts', posts);
 app.use('/api/dishes', dishes);
 app.use('/api/users',users);
+app.use('/api/components',components);
 
 
 const port = process.env.PORT || 5000
 db.sequelize.sync({ force: false })
     .then(
         function () {
-            createTrigger(db.sequelize);
+            dishKindEqTypeTriger(db.sequelize);
+            subTotalCountOfComp(db.sequelize);
+            
             app.listen(port, () => { console.log('server listening port ' + port); }
             )
         }
@@ -44,7 +47,7 @@ db.sequelize.sync({ force: false })
 
 
 
-async function createTrigger(sequelize) {
+async function dishKindEqTypeTriger(sequelize) {
     sequelize.query(`
   CREATE TRIGGER check_foreign_key_insert
   BEFORE INSERT ON portions
@@ -88,9 +91,34 @@ async function createTrigger(sequelize) {
 
   END;
 `).then(() => {
-        console.log('Trigger created successfully');
+        console.log('Trigger  dishKindEqTypeTriger  created successfully');
     }).catch(err => {
-        console.error('Error creating trigger:');
+        console.error('Trigger dishKindEqTypeTriger is already created ');
+    }).finally(() => {
+    });
+
+}
+
+
+
+async function subTotalCountOfComp(sequelize) {
+    sequelize.query(`
+  CREATE TRIGGER update_component_count
+AFTER INSERT ON DishComponents
+FOR EACH ROW
+BEGIN
+    DECLARE compCount DECIMAL(7, 3);
+    SET compCount = NEW.countOfComp;
+
+    UPDATE Components
+    SET count = count - compCount
+    WHERE component_id = NEW.componentF;
+END;
+
+`).then(() => {
+        console.log('Trigger  subTotalCountOfComp  created successfully');
+    }).catch(err => {
+        console.error('Trigger subTotalCountOfComp is already created ');
     }).finally(() => {
     });
 

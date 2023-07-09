@@ -12,9 +12,10 @@ console.log('baseName: ', basename);
 console.log('dirName: ', __dirname);
 let sequelize;
 if (config.use_env_variable) {
-    sequelize = new Sequelize(process.env[config.use_env_variable], config);
+// {...config,logging:false}
+    sequelize = new Sequelize(process.env[config.use_env_variable],{...config,logging:false});
 } else {
-    sequelize = new Sequelize(config.database, config.username, config.password, config);
+    sequelize = new Sequelize(config.database, config.username, config.password, {...config,logging:false});
 }
 
 fs
@@ -33,7 +34,7 @@ fs
             Sequelize.DataTypes);
         db[model.name] = model;
     });
-
+    
 if (db.User.associate) {
     db.User.associate(db);
 }

@@ -12,10 +12,14 @@ const {
 
 
 const router = express.Router();
-
+router.get('/logout', async (req, res) => {
+        res.cookie('access-token', '', { expires: new Date(0) });
+        res.json({msg:'log out success'})
+})
 
 router.post('/register', async (req, res) => {
     try {
+        res.cookie('access-token', '', { expires: new Date(0) });
         const { email, firstName, lastName, password, title, rank } = req.body;
         const hash = await bcrypt.hash(password, 10);
         const isPresent = await User.findOne({
@@ -42,7 +46,7 @@ router.post('/register', async (req, res) => {
                 title: title,
                 rank: rank
             });
-            res.status(200).json({msg:'registered'})
+            res.status(200).json({ msg: 'registered' })
 
         }
 
@@ -78,7 +82,7 @@ router.post("/login", async (req, res) => {
             }
         });
     } catch (err) {
-        
+
         console.log('unvalid login data');
     }
 });

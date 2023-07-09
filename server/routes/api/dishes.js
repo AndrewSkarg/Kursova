@@ -1,16 +1,3 @@
-// У вашому коді є декілька помилок, які слід виправити:
-
-// 1. У функції `loadPostsCollection`, коли ви повертаєте значення змінної `portionData`, ви повинні повернути саме цю змінну, а не пустий масив `dishes`. Замість `return dishes;` напишіть `return portionData;`.
-
-// 2. Ви можете вилучити оголошення змінних `dishes` та `portion`, оскільки вони не використовуються.
-
-// 3. Ви можете вилучити імпорт `const portion = require('../../models/portion');`, оскільки не використовуєте цей модуль у коді.
-
-// 4. У кінці блоку `.then( async (portions) => {`, після виводу даних `console.log(portionData);`, додайте рядок `return portionData;`, щоб повернути дані.
-
-// Ось оновлений код:
-
-// ```javascript
 const express = require('express');
 const { dirname } = require('path');
 const { validateToken } = require('../../JWT');
@@ -24,7 +11,28 @@ const router = express.Router();
 
 //VALIDATE TOKEN TO functions only for aut-cated
 //Get POSTS
-router.get('/day/:name', async (req, res) => {
+router.get('/:dish_id',validateToken, async (req, res) => {
+    console.log("cool")
+    const dish = await db['Dish'].findOne({
+        where: { dish_id: req.params.dish_id },
+        include: [db['Component']],
+    });
+if (dish) {
+        const components = await dish.getComponents(); // Update the associated components
+        console.log('Components of dish ',dish.dish_id,' ',dish.title,' ',JSON.stringify(components,null,2));
+        const responseData = {
+            dishTitle: dish.title,
+            components_: components
+        };
+        res.json(responseData);
+    } else {
+        console.log('omg')
+        res.json({ error: 'No components in dish' });
+    }
+});
+
+
+router.get('/day/:name',validateToken, async (req, res) => {
     const posts = await loadPostsCollection(req.params.name);
     const j = JSON.stringify(posts, null, 2);
     console.log('All dishes:', j);
@@ -32,7 +40,7 @@ router.get('/day/:name', async (req, res) => {
 });
 
 //Add Post
-router.post('/', async (req, res) => {
+router.post('/',validateToken, async (req, res) => {
     const posts = await loadPostsCollection();
     await db['Dish'].create({
         title: req.body.title,
@@ -43,13 +51,50 @@ router.post('/', async (req, res) => {
 });
 
 //Delete Post
-router.delete('/:dish_id', async (req, res) => {
+router.delete('/:dish_id',validateToken, async (req, res) => {
     const posts = await loadPostsCollection();
-    await db['Dish'].destroy({
+    const result = await db['Dish'].destroy({
         where: { dish_id: req.params.dish_id }
     });
-    res.status(200).send();
+    if (result == 1)
+        res.status(200).json({ msg: 'Deleted dish' });
+    else
+        res.status(200).json({ error: 'Not existing dish' });
+
 });
+router.put('/:dish_id',validateToken, async (req, res) => {
+    const dish = await db['Dish'].findOne({
+        where: { dish_id: req.params.dish_id },
+        include: [db['Component']],
+    });
+
+    if (dish) {
+        dish.title = 'someTitle2';
+        req.body.id
+        // const components = dish.Components;
+        // components.forEach((component) => {
+        //     component.title = 'New Title';
+        //     component.count = 10;
+        //     component.priceForUnit = 9.99;
+        //     component.unit = 'кг';
+        //     component.description = 'крупи';
+
+        //     component.save();
+        // });
+        // const generalComponents = await db['Component'].findAll();
+
+        await dish.setComponents(generalComponents); // Update the associated components
+        await dish.save();
+
+        res.json({ msg: 'Dish changed' });
+
+    } else {
+        res.json({ error: 'Not existing dish' });
+    }
+
+
+});
+
 
 async function loadPostsCollection(nameDay) {
     let numDay = 1;
@@ -99,7 +144,7 @@ async function loadPostsCollection(nameDay) {
             // Retrieve the title and kind for each foreign key field
             if (portion.firstDishF) {
                 const firstDish = await db['Dish'].findOne({
-                    attributes: ['dish_id','title', 'kind'],
+                    attributes: ['dish_id', 'title', 'kind'],
                     where: {
                         dish_id: portion.firstDishF
                     }
@@ -113,7 +158,7 @@ async function loadPostsCollection(nameDay) {
 
             if (portion.secondDishF) {
                 const secondDish = await db['Dish'].findOne({
-                    attributes: ['dish_id','title', 'kind'],
+                    attributes: ['dish_id', 'title', 'kind'],
                     where: {
                         dish_id: portion.secondDishF
                     }
@@ -127,7 +172,7 @@ async function loadPostsCollection(nameDay) {
 
             if (portion.dessertDishF) {
                 const dessertDish = await db['Dish'].findOne({
-                    attributes: ['dish_id','title', 'kind'],
+                    attributes: ['dish_id', 'title', 'kind'],
                     where: {
                         dish_id: portion.dessertDishF
                     }
@@ -141,7 +186,7 @@ async function loadPostsCollection(nameDay) {
 
             if (portion.saladDishF) {
                 const saladDish = await db['Dish'].findOne({
-                    attributes: ['dish_id','title', 'kind'],
+                    attributes: ['dish_id', 'title', 'kind'],
                     where: {
                         dish_id: portion.saladDishF
                     }
@@ -155,7 +200,7 @@ async function loadPostsCollection(nameDay) {
 
             if (portion.portionDrinkF) {
                 const portionDrink = await db['Component'].findOne({
-                    attributes: ['component_id','title', 'unit','description'],
+                    attributes: ['component_id', 'title', 'unit', 'description'],
                     where: {
                         component_id: portion.portionDrinkF
                     }
@@ -164,11 +209,11 @@ async function loadPostsCollection(nameDay) {
                     dish_id: portionDrink.component_id,
                     title: portionDrink.title,
                     kind: portionDrink.description,
-                    unit:portionDrink.unit
+                    unit: portionDrink.unit
                 };
             }
 
-            portionData[order]=dishData;
+            portionData[order] = dishData;
         }
 
         console.log(portionData);

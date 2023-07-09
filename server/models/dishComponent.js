@@ -18,6 +18,11 @@ module.exports = (sequelize, Sequelize) => {
                 model: 'Components',
                 key: 'component_id'
             }
+        },
+
+        countOfComp:{
+            type:Sequelize.DECIMAL(4,3),
+            allowNull: false,
         }
         
     }, {
