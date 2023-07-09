@@ -18,7 +18,7 @@
       <div><router-link to="/"> Графік прийому їжі </router-link></div>
       <div><router-link to="/"> Книга скарг </router-link></div>
       <div><router-link to="/"> Меню </router-link></div>
-      <div><router-link to="/register"> Вихід </router-link></div>
+      <div><router-link to="/logout"> Вихід/Вхід </router-link></div>
     </div>
   </header>
 </template>

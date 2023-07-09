@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!this.error">
     <HeaderComponent />
 
     <h1>Добавити страву</h1>
@@ -37,8 +37,6 @@
     <hr />
     <p class="error" v-if="error">{{ error }}</p>
     <div class="posts-container">
-      
-
       <div class="column" v-for="(dishes, ind) in portions" :key="ind">
         <h2>{{ ind }}</h2>
         <div
@@ -47,9 +45,8 @@
           v-bind:item="dish"
           v-bind:index="index"
           v-bind:key="dish.dish_id"
-          v-on:dblclick="deleteDish(dish.dish_id)"
+          v-on:dblclick="dishInfo(dish.dish_id)"
         >
-          
           <p class="kind" v-if="index === 'firstDishF'">перше</p>
           <p class="kind" v-if="index === 'secondDishF'">друге</p>
           <p class="kind" v-if="index === 'dessertDishF'">десерт</p>
@@ -58,10 +55,13 @@
 
           <p class="text">{{ dish.title }}</p>
         </div>
-      
       </div>
     </div>
   </div>
+<div v-else class="error">
+  <p style="font-size: 3vw;">Not authorized!</p>
+  <p style="font-size: 2vw;">Please <a href="/login">LOGIN</a></p>
+</div>
 </template>
 
 <script>
@@ -97,52 +97,60 @@ export default {
   },
   methods: {
     async createDish() {
-      await PostService.insertDish(
-        this.title,
-        this.description,
-        this.portionForeign
-      );
-      this.dishes = await PostService.getDishes();
+      try {
+        await PostService.insertDish(
+          this.title,
+          this.description,
+          this.portionForeign
+        );
+        this.dishes = await PostService.getDishes();
+      } catch (error) {
+        this.error = error.message;
+      }
     },
-    async deleteDish(id) {
-      await PostService.deleteDish(id);
-      this.dishes = await PostService.getDishes();
+    async dishInfo(id) {
+      try {
+        this.$router.push({ name: "dishInfo", params: { dishId: id } });
+      } catch (error) {
+        this.error = error.message;
+      }
+      // await PostService.changeDish(id);
+      // this.dishes = await PostService.getDishes();
     },
-  },
 
-  // computed: {
-  //   filteredDishes() {
-  //     console.log(this.$route.path);
-  //     return this.dishes.filter(dish => dish.portionForeign === 1);
-  //   }
-  //  }
+    // computed: {
+    //   filteredDishes() {
+    //     console.log(this.$route.path);
+    //     return this.dishes.filter(dish => dish.portionForeign === 1);
+    //   }
+    //  }
 
-  computed: {
-    groupedDishes() {
-      const groups = {};
+    computed: {
+      groupedDishes() {
+        const groups = {};
 
-      this.dishes.forEach((dish) => {
-        const kind = dish.kind;
+        this.dishes.forEach((dish) => {
+          const kind = dish.kind;
 
-        if (!groups[kind]) {
-          groups[kind] = {
-            kind,
-            dishes: [],
-          };
-        }
-        //if(!groups[kind].dishes[])
+          if (!groups[kind]) {
+            groups[kind] = {
+              kind,
+              dishes: [],
+            };
+          }
+          //if(!groups[kind].dishes[])
 
-        groups[kind].dishes.push(dish);
-      });
+          groups[kind].dishes.push(dish);
+        });
 
-      return Object.values(groups);
+        return Object.values(groups);
+      },
     },
   },
 };
 </script>
 
 <style ref scoped>
-
 .posts-container {
   display: flex;
   justify-content: space-around;

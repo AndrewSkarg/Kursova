@@ -92,6 +92,9 @@
           </div>
         </form>
         <p class="error">{{ error }}</p>
+        <p v-if="firstName.length < minLength || lastName.length < minLength || firstName.length > maxLength || lastName.length > maxLength " class="error">Мінімальна довжина імені/прізвища {{ minLength }}, максимальна - {{ maxLength }} символи</p>
+
+
         <p>Маєте акаунт? <a href="/login">Увійти</a></p>
       </div>
     </div>
@@ -109,6 +112,11 @@ export default {
   components: {
     HeaderComponent,
   },
+  created(){
+      
+
+
+},
   data() {
     return {
       email: "",
@@ -118,6 +126,8 @@ export default {
       rank: "солдат",
       title: "курсант",
       error: "",
+      minLength:3,
+      maxLength:20
     };
   },
 

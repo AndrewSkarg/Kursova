@@ -4,6 +4,9 @@ import RegistrationView from '../views/RegistrationView.vue'
 import LoginView from '../views/LoginView.vue'
 import DayInfoView from '../views/DayInfoView.vue'
 import ProfileView from '../views/ProfileView.vue'
+import DishInfoView from '../views/DishInfoView.vue'
+import axios from 'axios';
+
 
 const routes = [
 
@@ -38,6 +41,32 @@ const routes = [
     name: 'day',
     component: DayInfoView
   },
+
+  {
+    path: '/logout',
+    name: 'logout',
+    beforeEnter: (to, from, next) => {
+      axios.get('/api/users/logout').then(response => {
+        console.log(response.data.msg);
+        next('/login');
+      })
+        .catch(error => {
+          // Обробка помилки, якщо Axios-запит не вдається
+          console.error(error);
+          next('/register');
+        });
+
+
+    }
+  },
+
+  {
+    path: '/dish-info/:dishId',
+  name: 'dishInfo',
+  component: DishInfoView
+  }
+
+
 
 
 
