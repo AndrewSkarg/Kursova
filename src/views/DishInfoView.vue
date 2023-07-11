@@ -1,7 +1,7 @@
 <template>
-  <div v-if="!this.error">
+  <div v-if="!error">
     <HeaderComponent />
-  
+
     <h1>Змінити назву</h1>
     <div class="create-post">
       <input
@@ -11,51 +11,48 @@
         placeholder="enter title"
       />
       <h2>Компоненти страви</h2>
-          <ul>
-            <li v-for="component in dishComponents" :key="component.component_id">
-              <span>{{ component.title }}</span>
-              <button @click="removeComponent(component)" class="delete-button">✕</button>
-              <button @click="editCount(component)" class="edit-button">✎</button>
-            </li>
-          </ul>
+      <ul>
+        <li v-for="component in selectedComponents" :key="component.component_id">
+          <button @click="removeComponent(component)" class="delete-button">✕</button>
+          <button @click="editCount(component)" class="edit-button">✎</button>
+        <span style="margin-inline: 2vw;">  {{ component.title }} </span>
 
-        <div class="form-group">
-                <label for="components">Вибір компонентів страви</label>
-                <input
-                  type="text"
-                  v-model="searchText"
-                  placeholder="Пошук за назвою"
-                  style="min-width: 200px; min-height: 30px"
-                />
-                <div class="checkbox-list">
-                  <label
-                    v-for="component in filteredComponents"
-                    :key="component.component_id"
-                    :class="{ 'selected': isSelectedComponent(component) }"
-                  >
-                    <span
-                      class="checkmark"
-                      v-if="isSelectedComponent(component)"
-                    ></span>
-                    <input
-                      type="checkbox"
-                      :id="component.component_id"
-                      :value="component.title"
-                      v-model="selectedComponents"
-                      style="display: none;"
-                    />
-                    {{ component.title }}
-                  </label>
 
+        </li>
+      </ul>
+
+      <div class="form-group">
+        <label for="components">Вибір компонентів страви</label>
+        <input
+          type="text"
+          v-model="searchText"
+          placeholder="Пошук за назвою"
+          style="min-width: 200px; min-height: 30px"
+        />
+        <div class="checkbox-list">
+          <label
+            v-for="component in filteredComponents"
+            :key="component.component_id"
+            :class="{ selected: component.selected }"
+          >
+            <span class="checkmark" v-if="component.selected"></span>
+            <input
+              type="checkbox"
+              :id="component.component_id"
+              :value="component.title"
+              @change="updateDishComponents(component,$event.target.checked)"
+              style="display: none"
+            />
+
+
+            
+
+            {{ component.title }}
+          </label>
         </div>
-  <button v-if="showAddButton" @click="addNewComponent" style="font-size: 5vw;">+</button>
-</div>
-
-
-
-
-
-      <p>{{ dishComponents }}</p>
+      </div>
+      <button class="add-button" v-if="showAddButton" @click="addNewComponent" >+</button>
+      <p>{{ selectedComponents }}</p>
     </div>
   </div>
   <div v-else class="error">
@@ -76,7 +73,6 @@ export default {
     return {
       searchText: "",
       selectedComponents: [],
-      dishComponents: [],
       components: [],
       error: "",
       title: "",
@@ -84,62 +80,122 @@ export default {
     };
   },
   async created() {
-    //axios.get(`/api/dish-components/${dishId}`)
     try {
+      const valDishComp = await PostService.getDishComponents(this.$route.params.dishId);
       const valuesComp = await PostService.getComponents();
 
-      console.log('check ',valuesComp)
-
-      this.components=valuesComp.filter(component => {
-        return component.description !== "фрукти" && component.description !== "напої";
+      this.selectedComponents = valDishComp.components_.map((component)=>{ return {...component,selected:false}});
+      this.components = valuesComp.filter((component) => {
+        return (
+          !this.selectedComponents.some(
+            (dishComponent) =>
+              dishComponent.component_id === component.component_id
+          ) &&
+          component.description !== "фрукти" &&
+          component.description !== "напої"
+        );
       });
 
-
-      const valDishComp = await PostService.getDishComponents(
-        this.$route.params.dishId
-      );
-
-      this.dishComponents=valDishComp.components_;
-
-      this.title=valDishComp.dishTitle;
-      console.log('value ', valDishComp.dishTitle);
+      this.title = valDishComp.dishTitle;
     } catch (error) {
       this.error = error.message;
     }
   },
 
- computed: {
-  filteredComponents() {
-    if (!this.searchText) {
-      return this.components;
-    } else {
-      return this.components.filter(component => {
-        return component.title.toLowerCase().includes(this.searchText.toLowerCase());
-      });
-    }
+  computed: {
+    filteredComponents() {
+      if (!this.searchText) {
+        return this.components;
+      } else {
+        return this.components.filter((component) => {
+          return component.title.toLowerCase().includes(this.searchText.toLowerCase());
+        });
+      }
+    },
+    showAddButton() {
+      return (
+        this.searchText &&
+        !this.components.some((component) =>
+          component.title.toLowerCase() === this.searchText.toLowerCase()
+        )
+      );
+    },
+    // filteredComponentsWithSelectedStatus() {
+    //   return this.filteredComponents.map((component) => {
+    //     return {
+    //       ...component,
+    //       selected: this.isSelectedComponent(component),
+    //     };
+    //   });
+    // },
   },
-  showAddButton() {
-    return (
-      this.searchText &&
-      !this.components.some(component =>
-        component.title.toLowerCase() === this.searchText.toLowerCase()
-      )
-    );
+
+  methods: {
+    addNewComponent() {
+      const selectedComponentTitles = this.selectedComponents;
+      const selectedComponents = this.components.filter((component) =>
+        selectedComponentTitles.includes(component.title)
+      );
+
+      this.selectedComponents.push(...selectedComponents);
+      this.selectedComponents = [];
+    },
+    isSelectedComponent(component) {
+      return this.selectedComponents.includes(component.title);
+    },
+
+    updateDishComponents(component,checked) {
+      console.log(component);
+      console.log(checked);
+      // if (this.isSelectedComponent(component)) {
+      //   this.selectedComponents.push(component);
+      // }
+      if (checked) {
+          component.selected=true;
+          component.count="0";
+          if (!this.selectedComponents.some((comp) => comp.component_id === component.component_id)) {
+              this.selectedComponents.push(component);
+            }
+      }  
+      else {
+        component.selected=false;
+        const index = this.selectedComponents.findIndex(
+          (comp) => comp.component_id === component.component_id
+        );
+        if (index !== -1) {
+          this.selectedComponents.splice(index, 1);
+        }
+      }
+    },
+    removeComponent(component) {
+      const index = this.selectedComponents.findIndex((comp) => comp.component_id === component.component_id);
+      if (index !== -1) {
+        const removedComponent = this.selectedComponents.splice(index, 1)[0];
+        const isComponentPresent = this.components.some((comp) => comp.component_id === component.component_id);
+
+        if (!isComponentPresent) {
+          this.components = [...this.components, removedComponent];
+          const selectedIndex = this.selectedComponents.indexOf(removedComponent.title);
+          if (selectedIndex !== -1) {
+            this.selectedComponents.splice(selectedIndex, 1);
+          }
+        }else{
+            removedComponent.selected=false;
+        }
+        
+      }
+    },
+
+
+
+    editCount(component) {
+      console.log(component)
+    },
   },
-},
-methods: {
-  addNewComponent() {
-    // Додайте код для додавання нового компонента
-  },
-  isSelectedComponent(component) {
-    return this.selectedComponents.includes(component.title);
-  },
-},
 };
 </script>
 
-<style  scoped>
-
+<style scoped>
 .checkbox-list {
   overflow-y: auto;
   max-height: 150px;
@@ -175,9 +231,18 @@ methods: {
   border: 2px solid red;
 }
 
-.checkbox-list input[type="checkbox"],
-.checkbox-list label {
-  vertical-align: middle;
+li {
+  margin: 3vw;
+  font-size: 2vw;
+}
+
+.add-button {
+  margin: 2vw;
+  min-width: 5vw;
+  font-size: 5vw;
+}
+.edit-button, .delete-button{
+margin-inline: 0.5vw;
 }
 
 </style>
