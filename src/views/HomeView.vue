@@ -11,6 +11,8 @@
       <a class="rounded-div" href="/day/sun">Неділя</a>
     </div>
   </div>
+
+
 </template>
 
 <script>
@@ -21,6 +23,12 @@ export default {
   components: {
     HeaderComponent,
   },
+  data(){
+    return {     
+       error: "",
+    }
+  },
+  
 };
 </script>
 

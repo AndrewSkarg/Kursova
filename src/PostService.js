@@ -6,90 +6,61 @@ const urlComp = '/api/components'
 
 
 class PostService {
-    //get Posts
-
-    static async getResponse(url) {
-        try {
-
-            const res = await axios.get(`${url}`);
-            return res.data;
-        } catch (err) {
-            return err;
-        }
-
-    }
-
-
+    
     static async getDishes(day){
-        return this.getResponse(urlDish + day);  // /day/{day}
+        const res = await axios.get(`${urlDish + day}`);
+        return res.data;
     }
 
 
+    static async insertDish(title, kind) {
 
-
-    //create Posts
-    static insertDish(title, description, portionForeign, day) {
-
-        return axios.post(urlDish + day, {
+        return await axios.post(`${urlDish}/`,{
             title: title,
-            description: description,
-            portionForeign: portionForeign
-
+            kind:kind
         });
     }
 
-    //Delete Posts
-    static changeDish(dish_id) {
-        return axios.put(`${urlDish}/${dish_id}`);
+    static async insertComponent(title,count,priceForUnit,unit,description){
+        return await axios.post(`${urlComp}/`,{title:title,count:count,priceForUnit:priceForUnit,unit:unit,description:description});
+    }
+
+    static async changeDish(dish_id) {
+        
+        return await axios.put(`${urlDish}/${dish_id}`);
     }
 
     static async getDishComponents(dish_id) {
-        // return axios.get(`${urlDish}/${dish_id}`)
-        try {
             const res = await axios.get(`${urlDish}/${dish_id}`);  // /day/{day}
-            const data = res.data;
-            console.log(data);
-            return data;
-        } catch (err) {
-            return err;
-        }
-
-
+            return res.data;
     }
-
+    
     static async getComponents() {
-        try {
             const res = await axios.get(`${urlComp}`);
-            const data = res.data;
-            console.log(data);
-            return data;
-        } catch (err) {
-            return err;
-        }
-
+            return res.data;
     }
 
-    static getComponent(component_id) {
-        return axios.get(`${urlComp}/${component_id}`);
+    static async getComponent(component_id) {
+        return await axios.get(`${urlComp}/${component_id}`);
     }
 
 
-    static registerUser(email, password, firstName, lastName, title, rank) {
-        return axios.post(urlUser + '/register', { email, password, firstName, lastName, title, rank });
+    static async registerUser(email, password, firstName, lastName, title, rank) {
+        return await axios.post(urlUser + '/register', { email, password, firstName, lastName, title, rank });
     }
 
 
 
-    static loginUser(email, password) {
-        return axios.post(urlUser + '/login', { email, password });
+    static async loginUser(email, password) {
+        return await axios.post(urlUser + '/login', { email, password });
     }
 
-    static getProfile() {
-        return axios.get(urlUser + '/profile')
+    static async getProfile() {
+        return await axios.get(urlUser + '/profile')
     }
 
-    static logout() {
-        return axios.get(urlUser + '/logout')
+    static async logout() {
+        return await axios.get(urlUser + '/logout')
     }
 
 }

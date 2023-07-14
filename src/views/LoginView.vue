@@ -70,8 +70,8 @@ export default {
         this.$router.push("/profile");
       
       } catch (error) {
-        this.error = error.response.data.error;
-        console.log(error);
+        console.log('err: '  , error.response.data.error);
+        this.error=error.response.data.error;
       }
     },
   },

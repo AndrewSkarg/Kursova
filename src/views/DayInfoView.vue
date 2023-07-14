@@ -1,33 +1,29 @@
 <template>
   <div v-if="!this.error">
     <HeaderComponent />
-
+  <div v-if="this.role==='шеф'">
     <h1>Добавити страву</h1>
     <div class="create-post">
       <input
         type="text"
-        id="post-title"
-        v-model="title"
-        placeholder="enter title"
+        id="add-title"
+        v-model="newDish.title"
+        placeholder="введіть назву"
+        required
       />
-      <input
-        type="text"
-        id="post-desc"
-        v-model="description"
-        placeholder="enter description"
-      />
-      <input
-        type="text"
-        id="post portionForeign"
-        v-model="portionForeign"
-        placeholder="enter portion"
-      />
+      <select id="add-kind" v-model="newDish.kind" :class="{ 'error-field': !isDescriptionValid }">
+        <option value="" disabled selected>Оберіть опис</option>
+        <option value="перше">перше</option>
+        <option value="друге">друге</option>
+        <option value="салат">салат</option>
+        <option value="десерт">десерт</option>
+      </select>
+      
 
-      <input type="text" id="text" v-model="text" placeholder="enter text" />
 
-      <button v-on:click="createPost">Post!</button>
+      <button v-on:click="this.createDish()">Добавити!</button>
     </div>
-
+</div>
     <!-- in filteredDishes -->
 
     <h1>Страви:</h1>
@@ -74,36 +70,40 @@ export default {
   },
   data() {
     return {
+      newDish: {
+        title: null,
+        kind:null
+      },
+      role:'',
       portions: [],
       breakfast: [],
       dinner: [],
       supper: [],
       error: "",
-      title: "",
-      text: "",
       description: "",
       portionForeign: "",
     };
   },
   async created() {
     try {
-      this.portions = await PostService.getDishes(this.$route.path);
-      this.breakfast = this.portions["сніданок"];
-      this.dinner = this.portions["обід"];
-      this.supper = this.portions["вечеря"];
+      const prof=await PostService.getProfile();
+      this.role=prof.data.Roles[0].name;
+      this.portions = await PostService.getDishes(this.$route.path);      
     } catch (error) {
-      this.error = error.message;
+      this.error = error;
     }
   },
   methods: {
     async createDish() {
       try {
+      if(this.newDish.title && this.newDish.kind){
         await PostService.insertDish(
-          this.title,
-          this.description,
-          this.portionForeign
+          this.newDish.title,
+          this.newDish.kind
         );
-        this.dishes = await PostService.getDishes();
+      }else{
+        alert('Введіть всі поля!')
+      }
       } catch (error) {
         this.error = error.message;
       }
@@ -114,16 +114,8 @@ export default {
       } catch (error) {
         this.error = error.message;
       }
-      // await PostService.changeDish(id);
-      // this.dishes = await PostService.getDishes();
+      
     },
-
-    // computed: {
-    //   filteredDishes() {
-    //     console.log(this.$route.path);
-    //     return this.dishes.filter(dish => dish.portionForeign === 1);
-    //   }
-    //  }
 
     computed: {
       groupedDishes() {
@@ -138,7 +130,6 @@ export default {
               dishes: [],
             };
           }
-          //if(!groups[kind].dishes[])
 
           groups[kind].dishes.push(dish);
         });

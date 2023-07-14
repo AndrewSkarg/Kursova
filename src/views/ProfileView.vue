@@ -1,21 +1,38 @@
 <template>
-
-  <div v-if="!this.error" class="home">
+  <div v-if="!error" class="home">
     <HeaderComponent />
-    <div class="panel"><h1>Ваші особисті дані</h1></div><br>
-    <p>Звання: <span class="profData">{{rank}}</span></p><br>
-    <p>Ім'я: <span class="profData">{{firstName}}</span></p><br>
-    <p>Прізвище: <span class="profData">{{lastName}}</span></p><br>
-    <p>Роль: <span class="profData">{{whoInCanteen}}</span></p><br>
-    <p>Посада: <span class="profData">{{position}}</span></p><br>
+    <div class="panel">
+      <h1>Ваші особисті дані</h1>
+    </div><br>
+    <div class="profile-wrapper">
+      <div class="profile-picture">
+          <img :src="getRankImage(rank)" alt="Зображення збоку" />
+      </div>
+      <div class="profile-data">
+        <p><span class="label">Звання:</span> <span class="profData">{{ rank }}</span></p><br>
+        <p><span class="label">Ім'я:</span> <span class="profData">{{ firstName }}</span></p><br>
+        <p><span class="label">Прізвище:</span> <span class="profData">{{ lastName }}</span></p><br>
+        <p><span class="label">Роль:</span> <span class="profData">{{ role }}</span></p><br>
+        <p><span class="label">Посада:</span> <span class="profData">{{ position }}</span></p><br>
+        <p v-if="position.toLowerCase() === 'курсант'"><span class="label">Факультет:</span> <span class="profData">{{ faculty }}</span></p><br>
+      </div>
+    </div>
   </div>
-  <div v-else class="error" style="font-size: 10vw;">Not authorized! <a href="/login"> LOGIN</a></div>
+<div v-else class="error">
+  <p style="font-size: 3vw;">Not authorized!</p>
+  <p style="font-size: 2vw;">Please <a href="/login">LOGIN</a></p>
+</div>
 </template>
 
 <script>
-// @ is an alias to /src
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import PostService from "../PostService";
+import soldier from '../assets/img/soldier.jpg'
+// import sergeant from '../assets/img/sergeant.jpg'
+// import lieutenant from '../assets/img/lieutenant.jpg'
+// import major from '../assets/img/major.jpg'
+// import lieutenant_colonel from '../assets/img/lieutenant_colonel.png'
+// import colonel from '../assets/img/colonel.png'
 
 export default {
   name: "ProfileView",
@@ -24,42 +41,53 @@ export default {
   },
   data() {
     return {
-      error:"",
+      error: "",
       profile: {},
-      rank:"",
-      firstName:"",
-      lastName:"",
-      whoInCanteen:"", //name in Role
-      position:""   //title in Position
+      rank: "",
+      firstName: "",
+      lastName: "",
+      role: "",
+      position: "",
+      faculty: "",
+      soldier,
     };
   },
-// profile:Reactive
-// firstName:""
-// lastName:""
-// email:"skargandrew@gmail.co"
-// password:"$2b$10$z4gjjsv7KL.XC1kUU7Q2quaBeRWxVUvryVrOWySloVq8HO.J0/we2"
-// Roles:Array[1]
-// 0:Object
-// UserRole:Object
-// name:"споживач"
-// Position:Object
-// rank:"солдат"
-// title:"курсант"
-// user:35
-
   async created() {
     try {
-      const prof=await PostService.getProfile();
+      const prof = await PostService.getProfile();
       this.profile = prof.data;
-      this.firstName=this.profile.firstName;
-      this.lastName=this.profile.lastName;
-      this.whoInCanteen=this.profile.Roles[0].name;
-      this.position=this.profile.Position.title;
-      this.rank=this.profile.Position.rank;
-
+      this.firstName = this.profile.firstName;
+      this.lastName = this.profile.lastName;
+      this.role = this.profile.Roles[0].name;
+      this.position = this.profile.Position.title;
+      this.rank = this.profile.Position.rank;
+      this.faculty = '2';
+    
     } catch (error) {
       this.error = error.message;
     }
+  },
+  methods: {
+
+
+    getRankImage(rank) {
+      switch (rank) {
+        case 'солдат':
+          return '../assets/img/soldier.jpg';
+        case 'сержант':
+          return '../assets/img/sergeant.jpg';
+        case 'лейтенант':
+          return '../assets/img/lieutenant.jpg';
+        case 'майор':
+          return '../assets/img/major.jpg';
+        case 'підполковник':
+          return '../assets/img/lieutenant_colonel.png';
+        case 'полковник':
+          return '../assets/img/colonel.png';
+        default:
+          return '';
+      }
+    },
   },
 };
 </script>
@@ -68,23 +96,40 @@ export default {
 .home {
   word-wrap: break-word;
 }
-.rounded-div {
-  border-radius: 10px;
-  width: fit-content;
-  padding: 2%;
-  background-color: rgb(43, 226, 92);
-}
-.profData{
-  margin-left: 10vw;
-  
+
+
+.profData {
+  margin-left: 1rem;
 }
 
-p{
-  margin-inline-start: 1vw;
+.label {
+  display: inline-block;
+  width: 7rem;
+  font-weight: bold;
 }
+
 .panel {
   font-size: 1.3vw;
   display: flex;
   justify-content: space-evenly;
+}
+
+.profile-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.profile-picture {
+  margin-right: 2rem;
+}
+
+.profile-picture img {
+  width: 150px;
+  height: auto;
+}
+
+.profile-data {
+  font-size: 1.2rem;
 }
 </style>
