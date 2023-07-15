@@ -10,6 +10,8 @@ module.exports = (sequelize, Sequelize) => {
         title: {
             type: Sequelize.STRING,
             allowNull: false,
+            unique: true
+
         },
 
         kind: {
@@ -17,14 +19,6 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true,
         },
 
-        // portionForeign: {
-        //     type: Sequelize.INTEGER,
-        //     allowNull: true,
-        //     references: {
-        //         key: 'portion_id',
-        //         model: 'Portions'
-        //     }
-        // }
 
     }, {
         timestamps: false

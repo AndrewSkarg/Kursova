@@ -117,16 +117,7 @@ async function getProfile(user) {
             ]
         });
 
-        // userDb.position = await db['Position'].findOne({
-        //     attributes: ['title', 'rank', 'user'],
-        //     where: {
-        //         user: user.user_id //on db user change
-        //     }
-        // });
-
-
-
-        console.log(userDb);
+        
         return userDb;
 
     } catch (error) {

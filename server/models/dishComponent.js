@@ -22,7 +22,6 @@ module.exports = (sequelize, Sequelize) => {
 
         countOfComp:{
             type:Sequelize.DECIMAL(4,3),
-            allowNull: false,
         }
         
     }, {
