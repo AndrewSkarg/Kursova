@@ -1,25 +1,33 @@
 <template>
-  <div v-if="!this.error">
+  <div v-if="this.authorized">
     <HeaderComponent />
-
+  
+  <div v-if="this.role==='шеф'" style="flex-direction: row;">
     <h1>Змінити назву</h1>
-    <div class="create-post">
-      <input
-        type="text"
-        id="post-title"
-        v-model="title"
-        placeholder="enter title"
-      />
+    <div>
+        <input
+          type="text"
+          id="post-title"
+          v-model="title"
+          placeholder="enter title"
+        />
+        
+    </div>
+
+  </div>
+
       <h2>Компоненти страви</h2>
       <ul>
         <li
           v-for="component in selectedComponents"
           :key="component.component_id"
         >
+        <div v-if="this.role==='шеф'">
           <button @click="removeComponent(component)" class="delete-button">
             ✕
           </button>
           <button @click="toggleEdit(component)" class="edit-button">✎</button>
+        </div>
           <template v-if="component.editing">
             <input type="number" step="0.1" min="0" max="1" v-model="component.DishComponent.countOfComp"  />
           </template>
@@ -27,17 +35,19 @@
             <label>(Введіть вірну кількість! ✎) {{ component.DishComponent.countOfComp='0' }}/{{ component.count }} {{ component.unit }}</label>
           </template>
           <template v-else>
-            <label>{{ component.DishComponent.countOfComp }}/{{ component.count }}  {{ component.unit }}</label>
+            <label>{{ component.DishComponent.countOfComp }} <span v-if="this.role==='шеф'">/{{ component.count }} </span> {{ component.unit }}</label>
           </template>
           <span style="margin-inline: 1vw"> {{ component.title }} </span>
         </li>
       </ul>
-
-      <div class="form-group">
+  <br>
+    <div v-if="this.role==='шеф'">
+      <div  class="form-group">
         <label for="components">Вибір компонентів страви</label>
         <input
           type="text"
           v-model="searchText"
+          id="components"
           placeholder="Пошук за назвою"
           style="min-width: 30vw; max-width: 60vw; min-height: 2vh"
         />
@@ -63,10 +73,11 @@
       <button class="add-button" v-if="showAddButton" @click="toggleAddForm">
         {{ showAddForm ? 'Сховати форму' : '+' }}
       </button>
+    
       <div v-if="showAddForm">
         <create-component-form @new-component="addNewComponent" />
       </div>
-
+      <button class="add-button" @click="saveChanges">Зберегти зміни</button>
     </div>
   </div>
   <div v-else class="error">
@@ -88,6 +99,7 @@ export default {
   },
   data() {
     return {
+      role:'',
       searchText: "",
       selectedComponents: [],
       components: [],
@@ -96,6 +108,7 @@ export default {
       compon: "",
       dishId:"",
       showAddForm: false,
+      authorized:true
 
     };
   },
@@ -103,11 +116,14 @@ export default {
     this.dishId=   this.$route.params.dishId;
 
     try {
+      const prof=await PostService.getProfile();
+      this.role=prof.data.Roles[0].name;
       await this.getDishComponents();
       await this.getAllComponents();
 
     } catch (error) {
-      this.error = error.message;
+      this.error = error.response.status;
+      this.error===401?this.authorized=false:this.authorized=true
     }
   },
 
@@ -143,10 +159,39 @@ export default {
   },
 
   methods: {
+    async saveChanges(){
+     try{
+
+// ...DishComponent{dishF: '9', componentF: 4, countOfComp: 0.2}
+// component_id
+// count
+// description
+// editing
+// priceForUnit
+// selected
+// title
+// unit
+
+
+// eslint-disable-next-line
+      //const {component_id,count,description,editing,priceForUnit,selected,title,unit,...selectedProps}=this.selectedComponents;
+
+// eslint-disable-next-line
+const modifiedArray = this.selectedComponents.map(({ component_id,count,description,editing,priceForUnit,selected,title,unit,...selectedProps }) => {return selectedProps.DishComponent});
+
+await PostService.changeDish(this.dishId,this.title,modifiedArray);
+console.log('SELECTED COMPONENTS: ',modifiedArray)
+
+    }catch(err){
+      this.error=err;
+    }
+
+    },
+
     async getAllComponents(){
       const valuesComp = await PostService.getComponents();
       this.components=valuesComp.map((component) => {
-        return { ...component, DishComponent:{ ...component.DishComponent,"dishF": this.dishId, "componentF": component.component_id,"countOfComp": "0" }};});
+        return { ...component, DishComponent:{ ...component.DishComponent,"dishF": this.dishId, "componentF": component.component_id,"countOfComp": '0' }};});
       
       this.components = this.components.filter((component) => {
         return (
@@ -162,9 +207,10 @@ export default {
     async getDishComponents(){
       const valDishComp = await PostService.getDishComponents(this.dishId);
       this.title = valDishComp.dishTitle;
+  //DELETE           return { ...component,countOfComp: component.countOfComp, selected: true,   }; ///{ "dishF": 1, "componentF": 3, "countOfComp": "0.800" }  }
 
       this.selectedComponents = valDishComp.components_.map((component) => {
-        return { ...component, selected: true  }; ///{ "dishF": 1, "componentF": 3, "countOfComp": "0.800" }  }
+        return { ...component, selected: true,   }; ///{ "dishF": 1, "componentF": 3, "countOfComp": "0.800" }  }
       });
       // return  valDishComp;   
 
@@ -249,6 +295,8 @@ export default {
 </script>
 
 <style scoped>
+
+
 .checkbox-list {
   overflow-y: auto;
   max-height: 150px;

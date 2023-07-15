@@ -25,9 +25,9 @@ class PostService {
         return await axios.post(`${urlComp}/`,{title:title,count:count,priceForUnit:priceForUnit,unit:unit,description:description});
     }
 
-    static async changeDish(dish_id) {
+    static async changeDish(dish_id,title,selectedComponents) {
         
-        return await axios.put(`${urlDish}/${dish_id}`);
+        return await axios.put(`${urlDish}/${dish_id}`,{title:title,selectedComponents:selectedComponents});
     }
 
     static async getDishComponents(dish_id) {

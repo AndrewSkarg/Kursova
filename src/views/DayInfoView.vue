@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!this.error">
+  <div v-if="this.authorized">
     <HeaderComponent />
   <div v-if="this.role==='шеф'">
     <h1>Добавити страву</h1>
@@ -11,7 +11,7 @@
         placeholder="введіть назву"
         required
       />
-      <select id="add-kind" v-model="newDish.kind" :class="{ 'error-field': !isDescriptionValid }">
+      <select id="add-kind" v-model="newDish.kind">
         <option value="" disabled selected>Оберіть опис</option>
         <option value="перше">перше</option>
         <option value="друге">друге</option>
@@ -21,15 +21,13 @@
       
 
 
-      <button v-on:click="this.createDish()">Добавити!</button>
+      <button v-on:click="this.createDish()">Добавити!</button>  <span style="color: red;">{{isAddedDish}}</span> 
     </div>
 </div>
     <!-- in filteredDishes -->
 
     <h1>Страви:</h1>
-    <transition>
-      <span :key="text">{{ text }}</span>
-    </transition>
+  
     <hr />
     <p class="error" v-if="error">{{ error }}</p>
     <div class="posts-container">
@@ -41,7 +39,7 @@
           v-bind:item="dish"
           v-bind:index="index"
           v-bind:key="dish.dish_id"
-          v-on:dblclick="dishInfo(dish.dish_id)"
+          v-on:click="dishInfo(dish.dish_id,index)"
         >
           <p class="kind" v-if="index === 'firstDishF'">перше</p>
           <p class="kind" v-if="index === 'secondDishF'">друге</p>
@@ -49,13 +47,13 @@
           <p class="kind" v-if="index === 'saladDishF'">салат</p>
           <p class="kind" v-if="index === 'portionDrinkF'">напій</p>
 
-          <p class="text">{{ dish.title }}</p>
+          <p class="dishTitle">{{ dish.title }}</p>
         </div>
       </div>
     </div>
   </div>
 <div v-else class="error">
-  <p style="font-size: 3vw;">Not authorized!</p>
+  <p style="font-size: 3vw;">Not authorized! {{ error }}</p>
   <p style="font-size: 2vw;">Please <a href="/login">LOGIN</a></p>
 </div>
 </template>
@@ -72,7 +70,7 @@ export default {
     return {
       newDish: {
         title: null,
-        kind:null
+        kind:""
       },
       role:'',
       portions: [],
@@ -82,6 +80,9 @@ export default {
       error: "",
       description: "",
       portionForeign: "",
+      isAddedDish:"",
+      authorized:true
+
     };
   },
   async created() {
@@ -90,7 +91,9 @@ export default {
       this.role=prof.data.Roles[0].name;
       this.portions = await PostService.getDishes(this.$route.path);      
     } catch (error) {
-      this.error = error;
+      this.error = error.response.status;
+      this.error===401?this.authorized=false:this.authorized=true
+      this.error===409?this.isAddedDish='Страва уже існує':0
     }
   },
   methods: {
@@ -101,23 +104,26 @@ export default {
           this.newDish.title,
           this.newDish.kind
         );
+        this.isAddedDish='Страва добавлена у список'
       }else{
-        alert('Введіть всі поля!')
+        this.isAddedDish='Введіть усі дані'
       }
       } catch (error) {
         this.error = error.message;
       }
     },
-    async dishInfo(id) {
+    async dishInfo(id,index) {
       try {
-        this.$router.push({ name: "dishInfo", params: { dishId: id } });
+        index!=='portionDrinkF'?this.$router.push({ name: "dishInfo", params: { dishId: id } }):0;
       } catch (error) {
         this.error = error.message;
       }
       
     },
 
-    computed: {
+  },
+
+computed: {
       groupedDishes() {
         const groups = {};
 
@@ -137,7 +143,6 @@ export default {
         return Object.values(groups);
       },
     },
-  },
 };
 </script>
 
@@ -155,5 +160,12 @@ export default {
 .kind {
   margin: 0 0 0.5vw 0;
   font-size: 2.5vw;
+}
+.dishTitle{
+  text-decoration-line: underline;
+}
+.dishTitle:hover{
+  color: rgb(10, 72, 196);
+  
 }
 </style>
