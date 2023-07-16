@@ -15,11 +15,12 @@ app.use(cookieParser());
 const dishes = require('./routes/api/dishes');
 const users=require('./routes/api/users');
 const components = require('./routes/api/components');
-
+const portions=require('./routes/api/portions')
 // app.use('/api/posts', posts);
 app.use('/api/dishes', dishes);
 app.use('/api/users',users);
 app.use('/api/components',components);
+app.use('/api/portions',portions);
 
 
 const port = process.env.PORT || 5000

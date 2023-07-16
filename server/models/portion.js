@@ -24,23 +24,16 @@ module.exports = (sequelize, Sequelize) => {
 
         portionDrinkF: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'Components',
                 key: 'component_id'
             }
         },
-        // portionDishForeign: {
-        //     type: Sequelize.INTEGER,
-        //     allowNull: false,
-        //     references: {
-        //         model: 'Dishes',
-        //         key: 'dish_id'
-        //     }
-        // },//'перше','друге','салат','десерт'
+        
         firstDishF: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'Dishes',
                 key: 'dish_id'
@@ -49,7 +42,7 @@ module.exports = (sequelize, Sequelize) => {
 
         secondDishF: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'Dishes',
                 key: 'dish_id'
@@ -67,7 +60,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         saladDishF: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'Dishes',
                 key: 'dish_id'
