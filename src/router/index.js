@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue'
 import DayInfoView from '../views/DayInfoView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import DishInfoView from '../views/DishInfoView.vue'
+import DishesView from '../views/DishesView.vue'
 import axios from 'axios';
 
 
@@ -68,6 +69,12 @@ const routes = [
     path: '/dish-info/:dishId',
   name: 'dishInfo',
   component: DishInfoView
+  },
+
+  {
+    path: '/dishes-menu/',
+  name: 'dishesMenu',
+  component: DishesView
   }
 
 

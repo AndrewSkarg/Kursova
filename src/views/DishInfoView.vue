@@ -118,9 +118,10 @@ export default {
     try {
       const prof=await PostService.getProfile();
       this.role=prof.data.Roles[0].name;
+
       await this.getDishComponents();
       await this.getAllComponents();
-
+    
     } catch (error) {
       this.error = error.response.status;
       this.error===401?this.authorized=false:this.authorized=true
