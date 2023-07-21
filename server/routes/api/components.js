@@ -9,16 +9,13 @@ const {
 
 const router = express.Router();
 
-//VALIDATE TOKEN TO functions only for aut-cated
-//Get POSTS
 
-router.post('/',validateToken,async(req,res)=>{
-    //const posts = await loadPostsCollection();
+router.post('/', validateToken, async (req, res) => {
     await db['Component'].create({
         title: req.body.title,
-        count:req.body.count,
-        priceForUnit:req.body.priceForUnit,
-        unit:req.body.unit,
+        count: req.body.count,
+        priceForUnit: req.body.priceForUnit,
+        unit: req.body.unit,
         description: req.body.description,
     });
     res.status(201).send();
@@ -28,7 +25,6 @@ router.post('/',validateToken,async(req,res)=>{
 router.get('/', validateToken, async (req, res) => {
     const components = await loadComponents();
     const j = JSON.stringify(components, null, 2);
-    //console.log('All components:', j);
     res.send(j);
 })
 
@@ -69,4 +65,3 @@ async function loadComponents(includeDishes) {
 
 module.exports = router;
 
-//Будь ласка, спробуйте використати оновлений код і перевірте, чи ви все ще отримуєте помилку.

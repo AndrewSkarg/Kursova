@@ -12,18 +12,18 @@ const router = express.Router();
 //VALIDATE TOKEN TO functions only for aut-cated
 //Get POSTS
 
-router.get('/',validateToken,async(req,res)=>{
+router.get('/', validateToken, async (req, res) => {
     const dishes = await db['Dish'].findAll({
         // include: [db['Component']],
     });
     //console.log(dishes)
-    const arr=[]
-    dishes.forEach( element => {
-        const {Components,...rest}=element.dataValues;
-         arr.push(rest);
-            //  element.dataValues.Components.forEach( el=>{
-            //      console.log(el.dataValues);
-            // })
+    const arr = []
+    dishes.forEach(element => {
+        const { Components, ...rest } = element.dataValues;
+        arr.push(rest);
+        //  element.dataValues.Components.forEach( el=>{
+        //      console.log(el.dataValues);
+        // })
     });
 
     console.log(arr);
@@ -65,15 +65,28 @@ router.post('/', validateToken, async (req, res) => {
     //const posts = await loadDishes();
     console.log('creating', req.body.title, ' ', req.body.kind)
 
-    try{
-    const dish = await db['Dish'].create({
-        title: req.body.title,
-        kind: req.body.kind,
-    });
-    res.status(201).json({dish});
+    try {
+        const dish = await db['Dish'].findOne({
+            where: {
+                title: req.body.title
+            }
+        });
 
-    }catch(err){
-        const msg='Елемент уже існує або невірно введені дані';
+        if (dish) {
+            res.status(200).json({ dish });
+        } else {
+
+            const dish = await db['Dish'].create({
+                title: req.body.title,
+                kind: req.body.kind,
+            });
+            res.status(201).json({ dish });
+
+        }
+
+
+    } catch (err) {
+        const msg = 'невірно введені дані';
         console.log(msg);
         return res.status(409).json({ error: msg });
     }
@@ -85,6 +98,8 @@ router.delete('/:dish_id', validateToken, async (req, res) => {
     const result = await db['Dish'].destroy({
         where: { dish_id: req.params.dish_id }
     });
+    const show=await db['Portion'].findOne({where:{firstDishF:req.params.dish_id }});
+    console.dir(show);
     if (result == 1)
         res.status(200).json({ msg: 'Deleted dish' });
     else
@@ -94,31 +109,51 @@ router.delete('/:dish_id', validateToken, async (req, res) => {
 
 
 router.put('/:dish_id', validateToken, async (req, res) => {
-        await db['Dish'].update(
-            { title: req.body.title },
-            { where: { dish_id: req.params.dish_id } }
-        );
+    await db['Dish'].update(
+        { title: req.body.title },
+        { where: { dish_id: req.params.dish_id } }
+    );
+    const selectedComponents = req.body.selectedComponents;
+    const dish_id = req.params.dish_id;
+
     const createdDishComponents = [];
-    
-    Promise.all(req.body.selectedComponents.map((dishCompData) => {
-    return db['DishComponent'].findOrCreate({
-        where: { dishF: req.params.dish_id, componentF: dishCompData.componentF}, // Умова пошуку запису
-        defaults: dishCompData // Значення для створення запису
-    }).then(([dishComp, created]) => {
-        createdDishComponents.push(dishComp.dataValues);
-    });
-    })).then(() => {
 
-    console.log("Страви були успішно створені:", createdDishComponents);
-    res.json({ msg: 'DishComponents created:' + createdDishComponents});
-    }).catch((error) => {
-    console.error("Помилка при створенні DishComponents:", error);
-    res.json({ error: 'Error creating DishComponents' });
+    await Promise.all(selectedComponents.map((dishCompData) => {
+
+        return db['DishComponent'].findOne({
+            where: { dishF: dish_id, componentF: dishCompData.componentF },
+        }).then(async (existingDishComp) => {
+        if (existingDishComp) {
+            // Якщо запис знайдений, оновлюємо його поля з dishCompData
+            await existingDishComp.update(dishCompData);
+        } else {
+            // Якщо запис не знайдений, створюємо новий запис з dishCompData
+            await db['DishComponent'].create(dishCompData);
+        }}).catch((error) => {
+        console.error("Помилка при створенні/оновленні DishComponents:", error);
+        res.json({ error: 'Error creating/updating DishComponents' });
     });
 
-    
 
-    });
+    })).then(async () => {
+        
+        const allDishComponents = await db['DishComponent'].findAll({ where: { dishF: dish_id } });
+
+        const selectedComponentF = selectedComponents.map((dishCompData) => dishCompData.componentF);
+        const componentsToDelete = allDishComponents.filter((dishComp) => !selectedComponentF.includes(dishComp.componentF));
+        await Promise.all(componentsToDelete.map((dishComp) => {
+            console.log('will del: ', dishComp.dataValues.componentF);
+            return db['DishComponent'].destroy({ where: { componentF: dishComp.dataValues.componentF } });
+        }));
+
+        res.json({ msg: 'DishComponents created:' + createdDishComponents });
+        console.log('okey');
+
+    })
+
+
+
+});
 
 
 async function loadDishes(nameDay) {
@@ -252,4 +287,3 @@ async function loadDishes(nameDay) {
 
 module.exports = router;
 
-//Будь ласка, спробуйте використати оновлений код і перевірте, чи ви все ще отримуєте помилку.

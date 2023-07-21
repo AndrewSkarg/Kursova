@@ -15,20 +15,22 @@ app.use(cookieParser());
 const dishes = require('./routes/api/dishes');
 const users=require('./routes/api/users');
 const components = require('./routes/api/components');
-const portions=require('./routes/api/portions')
-// app.use('/api/posts', posts);
+const portions=require('./routes/api/portions');
+//const drinks=require('./routes/api/drinks')
+
 app.use('/api/dishes', dishes);
 app.use('/api/users',users);
 app.use('/api/components',components);
 app.use('/api/portions',portions);
+//app.use('/api/drinks',drinks);
 
 
 const port = process.env.PORT || 5000
 db.sequelize.sync({ force: false })
     .then(
-        function () {
-            dishKindEqTypeTriger(db.sequelize);
-            subTotalCountOfComp(db.sequelize);
+         async function () {
+             await dishKindEqTypeTriger(db.sequelize);
+             await subTotalCountOfComp(db.sequelize);
             
             app.listen(port, () => { console.log('server listening port ' + port); }
             )
@@ -103,9 +105,28 @@ async function dishKindEqTypeTriger(sequelize) {
 
 
 async function subTotalCountOfComp(sequelize) {
-    sequelize.query(`
+
+    await sequelize.query(`
   CREATE TRIGGER update_component_count
 AFTER INSERT ON DishComponents
+FOR EACH ROW
+BEGIN
+    DECLARE oldCompCount DECIMAL(7, 3);
+    DECLARE newCompCount DECIMAL(7, 3);
+    
+    SELECT countOfComp INTO oldCompCount FROM DishComponents WHERE componentF = OLD.componentF;
+    SET newCompCount = NEW.countOfComp;
+
+    UPDATE Components
+    SET count = count - (newCompCount - oldCompCount)
+    WHERE component_id = NEW.componentF;
+END;
+
+`).then(()=>{console.log('creating update component count')}).catch(err=>{ console.log('Trigger  insert  created successfully'); });
+
+await sequelize.query(`
+  CREATE TRIGGER update_component_count_after_update
+AFTER UPDATE ON DishComponents
 FOR EACH ROW
 BEGIN
     DECLARE compCount DECIMAL(7, 3);
@@ -116,12 +137,9 @@ BEGIN
     WHERE component_id = NEW.componentF;
 END;
 
-`).then(() => {
-        console.log('Trigger  subTotalCountOfComp  created successfully');
-    }).catch(err => {
-        console.error('Trigger subTotalCountOfComp is already created ');
-    }).finally(() => {
-    });
+`).then(()=>{console.log('creating update component count')}).catch(err=>{console.log('Trigger  update count component  created successfully')})
+
+
 
 }
 
