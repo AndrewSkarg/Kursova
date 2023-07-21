@@ -4,14 +4,40 @@ const urlDish = '/api/dishes' ///day/sun
 const urlUser = '/api/users'
 const urlComp = '/api/components'
 const urlPort='/api/portions'
+//const urlDrink='/api/drinks'
 
 
 class PostService {
     
 
     static async insertPortion(order,dayF,dishF,kind){
-        return await axios.post(`${urlPort}/`,{order,dayF,dishF,kind});
+        let createdElement='';
+        await axios.post(`${urlPort}/`,{order,dayF,dishF,kind}).then(response => {
+                createdElement = response.data; 
+                console.log('created:' ,  createdElement);
+                
+            })
+            .catch(error => {
+                console.error(error);
+            })
+        return createdElement;
     }
+
+    static async getPortionByDayTime(day,time){
+        const res = await axios.get(`${urlPort}/${day}/${time}`);
+
+        return res.data;
+
+    }
+
+
+    static async changePortionDrink(portId,drinkId){
+        const res = await axios.put(`${urlPort}/${portId}`,{drinkId});
+        return res.data;
+
+    }
+
+
     static async getDishes(day){
         const res = await axios.get(`${urlDish + day}`);
         return res.data;
@@ -29,20 +55,18 @@ class PostService {
     static async insertDish(title, kind) {
         let createdElement='';
          await axios.post(`${urlDish}/`,{
-            title: title,
+            title:title,
             kind:kind
         }).then(response => {
                 createdElement = response.data; // Отримання створеного елемента з відповіді
                 console.log('created:' ,  createdElement);
-                
                 // Виконайте потрібні дії зі створеним елементом
             })
             .catch(error => {
                 console.error(error);
-                // Обробка помилки
             });
-        return createdElement;
-    }
+    return createdElement;
+ }
 
     static async insertComponent(title,count,priceForUnit,unit,description){
         return await axios.post(`${urlComp}/`,{title:title,count:count,priceForUnit:priceForUnit,unit:unit,description:description});
@@ -54,7 +78,7 @@ class PostService {
     }
 
     static async getDishComponents(dish_id) {
-            const res = await axios.get(`${urlDish}/${dish_id}`);  // /day/{day}
+            const res = await axios.get(`${urlDish}/${dish_id}`);  
             return res.data;
     }
     

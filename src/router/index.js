@@ -6,6 +6,7 @@ import DayInfoView from '../views/DayInfoView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import DishInfoView from '../views/DishInfoView.vue'
 import DishesView from '../views/DishesView.vue'
+import DrinkInfoView from '../views/DrinkInfoView'
 import axios from 'axios';
 
 
@@ -70,12 +71,19 @@ const routes = [
   name: 'dishInfo',
   component: DishInfoView
   },
-
+{
+    path: '/drink-info/:drinkId',
+  name: 'drinkInfo',
+  component: DrinkInfoView,
+  },
+  
   {
     path: '/dishes-menu/',
   name: 'dishesMenu',
-  component: DishesView
-  }
+  component: DishesView,
+  },
+
+
 
 
 
@@ -88,5 +96,7 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+
 
 export default router

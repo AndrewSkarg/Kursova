@@ -28,11 +28,11 @@
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import PostService from "../PostService";
 import soldier from '../assets/img/soldier.jpg'
-// import sergeant from '../assets/img/sergeant.jpg'
-// import lieutenant from '../assets/img/lieutenant.jpg'
-// import major from '../assets/img/major.jpg'
-// import lieutenant_colonel from '../assets/img/lieutenant_colonel.png'
-// import colonel from '../assets/img/colonel.png'
+import sergeant from '../assets/img/sergeant.jpg'
+import lieutenant from '../assets/img/lieutenant.jpg'
+import major from '../assets/img/major.jpg'
+import lieutenant_colonel from '../assets/img/lieutenant_colonel.jpg'
+import colonel from '../assets/img/colonel.jpg'
 
 export default {
   name: "ProfileView",
@@ -49,7 +49,7 @@ export default {
       role: "",
       position: "",
       faculty: "",
-      soldier,
+      soldier,sergeant,lieutenant,major,lieutenant_colonel,colonel
     };
   },
   async created() {
@@ -81,9 +81,9 @@ export default {
         case 'майор':
           return '../assets/img/major.jpg';
         case 'підполковник':
-          return '../assets/img/lieutenant_colonel.png';
+          return '../assets/img/lieutenant_colonel.jpg';
         case 'полковник':
-          return '../assets/img/colonel.png';
+          return '../assets/img/colonel.jpg';
         default:
           return '';
       }

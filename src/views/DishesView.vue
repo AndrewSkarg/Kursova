@@ -1,9 +1,10 @@
 <template>
   <div v-if="authorized">
     <HeaderComponent />
-    <div v-if="role==='шеф'">
+    <div >
+      <div class="create-post" v-if="role==='шеф'">
       <h1>Добавити/редагувати страву</h1>
-      <div class="create-post">
+
         <input
           type="text"
           id="add-title"
@@ -25,7 +26,7 @@
           <option value="2">вівторок</option>
           <option value="3">середа</option>
           <option value="4">четвер</option>
-          <option value="5">пятниця</option>
+          <option value="5">п'ятниця</option>
           <option value="6">субота</option>
           <option value="7">неділя</option>
 
@@ -74,7 +75,7 @@
           <li v-for="dish in filteredDishes" :key="dish.dish_id "  @click="handleDishClick(dish)">
             <div class="dish-info">
             <div  class="leftDiv">{{ dish.title }}</div> <div>{{ dish.kind }}</div>
-            <button class="pig-trough" @click="deleteDish(dish.dish_id)">
+            <button class="pig-trough" v-if="role==='шеф'" @click="deleteDish(dish.dish_id) ">
              Віддати свиням 🐷
             </button>
             </div>
@@ -87,7 +88,7 @@
 
 <style scoped>
 
-.leftDiv:hover{
+.dish-info:hover{
     min-width: 30vw;
     color: #820000;
     border: 1px solid orange;    
@@ -138,20 +139,30 @@ export default {
       authorized: true,
       isAddedDish: "",
       dishes: [
-        // Ваши данные по стравам
       ],
-      sortOption: "", // Поле для хранения выбранной опции сортировки
-      searchQuery: "", // Поле для хранения строки поиска
+      sortOption: "", 
+      searchQuery: "", 
     };
   },
+
+  // mounted() {
+  //   this.newDish.day = this.$route.query.day;
+  //    this.newDish.time = this.$route.query.time;
+  //    this.newDish.kind = this.$route.query.kind;
+  // },
   async created() {
     const prof = await PostService.getProfile();
     this.role = prof.data.Roles[0].name;
-    this.getAllDishes();
+    this.newDish.day = this.$route.query.day || "";
+    this.newDish.time = this.$route.query.time || "";
+    this.newDish.kind = this.$route.query.kind || "";
+    localStorage.setItem('reloadDone', 'false');
+
+
+    await this.getAllDishes();
   },
   computed: {
     filteredDishes() {
-      // Фильтрация и сортировка страв
       let filtered = [...this.dishes];
 
       if (this.sortOption !== "") {
@@ -178,15 +189,30 @@ export default {
         this.dishes = await PostService.getAllDishes();
     },
     async createDish() {
+      await this.$nextTick()
       try {
         if (this.newDish.title && this.newDish.kind) {
-          const  inserted=await PostService.insertDish(
+          let  inserted=await PostService.insertDish(
             this.newDish.title,
             this.newDish.kind
-          );
+          );  
+          console.dir(inserted);
+          console.dir('inserted: ' +inserted['dish'].title);
+          console.log('day '+this.newDish.day!=="");
+          console.log('time '+this.newDish.time!=="");
+          console.log('kind '+this.newDish.kind);
+          console.log('kind newDish '+this.newDish.kind);
+          console.log('kind inserted'+inserted['dish'].kind);
+
           if(this.newDish.day!=="" && this.newDish.time!==""){
-              console.log(inserted['dish'].dish_id);
-              PostService.insertPortion(this.newDish.time,this.newDish.day,inserted['dish'].dish_id,this.newDish.kind);
+              console.log('inserted: '+ inserted['dish'].dish_id);
+              if(this.newDish.kind!==inserted['dish'].kind){
+                  this.newDish.kind=inserted['dish'].kind;
+                  alert('Оскільки уже існує така страва, то вибрана категорія ['+inserted['dish'].kind +'] існуючої страви')
+              }
+
+              const port=await PostService.insertPortion(this.newDish.time,this.newDish.day,inserted['dish'].dish_id,inserted['dish'].kind);
+              console.log(port);
           }
           this.isAddedDish = 'Страва добавлена у список';
           await this.getAllDishes();
@@ -194,7 +220,7 @@ export default {
           this.isAddedDish = 'Введіть усі дані';
         }
       } catch (error) {
-        this.error = error.response.status;
+        //this.error = error.response.status;
         this.authorized = this.error === 401 ? false : true;
         this.isAddedDish = this.error === 409 ? 'Страва уже існує' : '';
       }
@@ -209,9 +235,7 @@ export default {
       console.log("елемент:", dish);
       this.newDish.title=dish.title;
       this.newDish.kind= dish.kind;
-      this.newDish.day='';//PostService.getPortions();
-      this.newDish.time='сніданок';  //{ dayF: 3, portionDrinkF: 1, order: 'обід', firstDishF: 5, secondDishF: 6, dessertDishF: 12, saladDishF: 7 },
-
+  
     },
   },
 };

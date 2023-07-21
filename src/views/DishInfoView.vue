@@ -200,7 +200,6 @@ console.log('SELECTED COMPONENTS: ',modifiedArray)
             (dishComponent) =>
               dishComponent.component_id === component.component_id
           ) &&
-          component.description !== "фрукти" &&
           component.description !== "напої"
         );
       });    
@@ -208,12 +207,10 @@ console.log('SELECTED COMPONENTS: ',modifiedArray)
     async getDishComponents(){
       const valDishComp = await PostService.getDishComponents(this.dishId);
       this.title = valDishComp.dishTitle;
-  //DELETE           return { ...component,countOfComp: component.countOfComp, selected: true,   }; ///{ "dishF": 1, "componentF": 3, "countOfComp": "0.800" }  }
 
       this.selectedComponents = valDishComp.components_.map((component) => {
-        return { ...component, selected: true,   }; ///{ "dishF": 1, "componentF": 3, "countOfComp": "0.800" }  }
+        return { ...component, selected: true,   }; 
       });
-      // return  valDishComp;   
 
     },
 
