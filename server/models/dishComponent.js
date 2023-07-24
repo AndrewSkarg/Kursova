@@ -1,8 +1,3 @@
-// const { Model } = require("sequelize");
-
-// const Component = require("./component");
-// const Dish = require("./dish");
-
 module.exports = (sequelize, Sequelize) => {
     const DishComponent = sequelize.define("DishComponent", {
         dishF: {

@@ -13,7 +13,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
         },
 
-        dayF: { //foreignKey
+        dayF: { 
             type: Sequelize.INTEGER,
             allowNull: false,
             references: {
@@ -137,10 +137,7 @@ module.exports = (sequelize, Sequelize) => {
             {
                 foreignKey: 'dayF'
             }
-        ); //!!МАКСИМУМ ДЕНЬ ПОВТОРЮЄТЬСЯ 3 РАЗИ У ТАБЛИЦІ Portion
-        // Portion.belongsTo(mo els.Day, {as: 'afternoonPortion'});
-        // Portion.belongsTo(models.Day, {as: 'eveningPortion'});
-
+        ); 
     };
 
     return Portion;

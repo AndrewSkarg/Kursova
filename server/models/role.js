@@ -16,12 +16,6 @@ module.exports = (sequelize, Sequelize) => {
                 otherKey:  'user'
             }
         );
-        // Role.hasMany(models.UserRole,
-        //     {
-        //         foreignKey: 'role'
-        //     }
-        // )
-
     };
 
    

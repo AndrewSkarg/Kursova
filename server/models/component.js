@@ -40,10 +40,6 @@ module.exports = (sequelize, Sequelize) => {
                 otherKey:'dishF'
             }
         );
-        // Component.hasMany(models.DishComponent, {
-        //     foreignKey:'componentForeign'
-        // });
-
         Component.hasMany(models.Portion,
             {
                 foreignKey: 'portionDrinkF'

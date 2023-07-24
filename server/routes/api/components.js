@@ -1,7 +1,7 @@
 const express = require('express');
 const { dirname } = require('path');
 const { validateToken } = require('../../JWT');
-const appDir = dirname(require.main.filename); //get current execut file
+const appDir = dirname(require.main.filename); 
 const db = require(appDir + '/models');
 const {
     Op

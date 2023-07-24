@@ -6,20 +6,15 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             allowNull: false
         },
-
         title: {
             type: Sequelize.STRING,
             allowNull: false,
             unique: true
-
         },
-
         kind: {
             type: Sequelize.ENUM('перше', 'друге', 'салат', 'десерт'),
             allowNull: true,
         },
-
-
     }, {
         timestamps: false
     });
@@ -31,20 +26,6 @@ module.exports = (sequelize, Sequelize) => {
                 foreignKey: 'dishF',
                 otherKey: 'componentF'
             });
-
-        // Dish.hasMany(models.DishComponent,
-        //     {
-        //         foreignKey: 'dishF'
-        //     }
-        // );
-
-        // Dish.belongsTo(models.Portion,
-        //     {
-        //         foreignKey: 'portionForeign'
-
-        //     }
-        // );
-
 
         Dish.hasMany(models.Portion,
             {
@@ -73,8 +54,7 @@ module.exports = (sequelize, Sequelize) => {
                 foreignKey: 'saladDishF'
             }
         );
-        // User.hasMany(models.Role);
-        // User.hasMany(models.Position);saladDishF
+       
     };
 
     return Dish;

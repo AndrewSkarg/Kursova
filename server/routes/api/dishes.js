@@ -1,7 +1,7 @@
 const express = require('express');
 const { dirname } = require('path');
 const { validateToken } = require('../../JWT');
-const appDir = dirname(require.main.filename); //get current execut file
+const appDir = dirname(require.main.filename); 
 const db = require(appDir + '/models');
 const {
     Op
@@ -9,21 +9,14 @@ const {
 
 const router = express.Router();
 
-//VALIDATE TOKEN TO functions only for aut-cated
-//Get POSTS
-
 router.get('/', validateToken, async (req, res) => {
     const dishes = await db['Dish'].findAll({
-        // include: [db['Component']],
     });
-    //console.log(dishes)
     const arr = []
     dishes.forEach(element => {
         const { Components, ...rest } = element.dataValues;
         arr.push(rest);
-        //  element.dataValues.Components.forEach( el=>{
-        //      console.log(el.dataValues);
-        // })
+       
     });
 
     console.log(arr);
@@ -39,7 +32,7 @@ router.get('/:dish_id', validateToken, async (req, res) => {
         include: [db['Component']],
     });
     if (dish) {
-        const components = await dish.getComponents(); // Update the associated components
+        const components = await dish.getComponents(); 
         console.log('Components of dish ', dish.dish_id, ' ', dish.title, ' ', JSON.stringify(components, null, 2));
         const responseData = {
             dishTitle: dish.title,
@@ -60,9 +53,7 @@ router.get('/day/:name', validateToken, async (req, res) => {
     res.send(j);
 });
 
-//Add Post
 router.post('/', validateToken, async (req, res) => {
-    //const posts = await loadDishes();
     console.log('creating', req.body.title, ' ', req.body.kind)
 
     try {
@@ -92,9 +83,7 @@ router.post('/', validateToken, async (req, res) => {
     }
 });
 
-//Delete Post
 router.delete('/:dish_id', validateToken, async (req, res) => {
-    //const posts = await loadDishes();
     const result = await db['Dish'].destroy({
         where: { dish_id: req.params.dish_id }
     });
@@ -124,10 +113,8 @@ router.put('/:dish_id', validateToken, async (req, res) => {
             where: { dishF: dish_id, componentF: dishCompData.componentF },
         }).then(async (existingDishComp) => {
         if (existingDishComp) {
-            // Якщо запис знайдений, оновлюємо його поля з dishCompData
             await existingDishComp.update(dishCompData);
         } else {
-            // Якщо запис не знайдений, створюємо новий запис з dishCompData
             await db['DishComponent'].create(dishCompData);
         }}).catch((error) => {
         console.error("Помилка при створенні/оновленні DishComponents:", error);
@@ -201,7 +188,6 @@ async function loadDishes(nameDay) {
 
             const dishData = {};
 
-            // Retrieve the title and kind for each foreign key field
             if (portion.firstDishF) {
                 const firstDish = await db['Dish'].findOne({
                     attributes: ['dish_id', 'title', 'kind'],

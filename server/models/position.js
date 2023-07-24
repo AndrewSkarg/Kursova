@@ -1,7 +1,3 @@
-//const sequelize = require('sequelize');
-//const Sequelize = require('mysql');
-
-
 module.exports = (sequelize, Sequelize) => {
     const Position = sequelize.define("Position", {
         position_id: {

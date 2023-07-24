@@ -19,7 +19,6 @@ module.exports = (sequelize, Sequelize) => {
         }
     },
         {
-           // primaryKey: true,
             timestamps: false
         });
    

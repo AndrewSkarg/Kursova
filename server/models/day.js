@@ -3,16 +3,12 @@ module.exports = (sequelize, Sequelize) => {
     day: {
       type: Sequelize.INTEGER,
       primaryKey: true,
-      //allowNull: false
     },
     dayName:{
       type:Sequelize.STRING,
       allowNull:false
     },
-    
-
   },
-
     {
       timestamps: false
     });

@@ -1,7 +1,7 @@
 const express = require('express');
 const { dirname } = require('path');
 const { validateToken } = require('../../JWT');
-const appDir = dirname(require.main.filename); //get current execut file
+const appDir = dirname(require.main.filename); 
 const db = require(appDir + '/models');
 const {
   Op
@@ -22,8 +22,8 @@ router.put('/:portionId',validateToken, async (req, res) => {
     console.log(req.params.portionId);
     console.log(req.body.drinkId);
     const portion= await db['Portion'].update(
-      { portionDrinkF: req.body.drinkId }, // Specify the field and its updated value
-      { where: { portion_id: req.params.portionId } } // Set the condition for the update
+      { portionDrinkF: req.body.drinkId }, 
+      { where: { portion_id: req.params.portionId } } 
     );
     const j = JSON.stringify(portion, null, 2);
     console.log('Portion that was updated:',j);
@@ -66,12 +66,6 @@ router.post('/', validateToken, async (req, res) => {
   res.status(201).send();
 
 })
-
-
-
-
-
-
 
 module.exports = router;
 

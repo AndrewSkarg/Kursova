@@ -1,6 +1,6 @@
 const express = require('express');
 const { dirname } = require('path');
-const appDir = dirname(require.main.filename); //get current execut file
+const appDir = dirname(require.main.filename); 
 const db = require(appDir + '/models');
 const { User } = require(appDir + '/models');
 const bcrypt = require("bcrypt");
@@ -9,7 +9,6 @@ const { createTokens, validateToken } = require(appDir + '/JWT');
 const {
     Op
 } = db.Sequelize;
-
 
 const router = express.Router();
 router.get('/logout', async (req, res) => {
@@ -27,7 +26,7 @@ router.post('/register', async (req, res) => {
         });
 
         if (isPresent) {
-            res.status(409).json({ error: "User with this email is already registered!" }); //409
+            res.status(409).json({ error: "User with this email is already registered!" });
         } else {
             const newUser = await User.create({
                 firstName: firstName,
@@ -40,7 +39,6 @@ router.post('/register', async (req, res) => {
                 user: newUser.user_id,
                 role: 1
             });
-            //'title','rank','user'
             await db['Position'].create({
                 user: newUser.user_id,
                 title: title,
@@ -49,8 +47,6 @@ router.post('/register', async (req, res) => {
             res.status(200).json({ msg: 'registered' })
 
         }
-
-
     } catch (err) {
         res.status(400).json({ error: err.message });
     }

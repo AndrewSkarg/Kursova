@@ -52,11 +52,7 @@ module.exports = (sequelize, Sequelize) => {
                 otherKey: 'role'
             }
         );
-        // User.hasMany(models.UserRole,
-        //     {
-        //         foreignKey: 'user'
-        //     }
-        // );
+        
         User.hasOne(models.Position,
             {
                 foreignKey: 'user'
