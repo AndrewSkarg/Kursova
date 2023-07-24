@@ -1,9 +1,8 @@
 <template>
   <div v-if="!error" class="home">
     <HeaderComponent />
-    <div class="panel">
-      <h1>Ваші особисті дані</h1>
-    </div><br>
+      <h1 style="margin-left: 2vw;">Ваші особисті дані</h1>
+    <br>
     <div class="profile-wrapper">
       <div class="profile-picture">
           <img :src="getRankImage(rank)" alt="Зображення збоку" />
@@ -94,6 +93,7 @@ export default {
 
 <style scoped>
 .home {
+  
   word-wrap: break-word;
 }
 
@@ -125,6 +125,7 @@ export default {
 }
 
 .profile-picture img {
+  margin-left: 3vw;
   width: 150px;
   height: auto;
 }

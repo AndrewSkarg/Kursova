@@ -89,19 +89,6 @@ export default {
     }
   },
   methods: {
-
-
-// updateContainer() {
-//       // Обновляем данные для класса контейнера
-//       // Находим все элементы с классом "dishTitle"
-//       const dishTitles = document.querySelectorAll(".dishTitle");
-
-//       // Удаляем текст из каждого элемента с классом "dishTitle"
-//       dishTitles.forEach((element) => {
-//         element.textContent = "";
-//       });
-//     },
-
  
     getTranslatedDayToNumber(){
       const paramValue = this.$route.params;
@@ -233,12 +220,7 @@ Array.from(dishTitles).forEach((dishTitle) => {
 
 <style ref scoped>
 
-.styled-button {
-  display: inline-block;
-  border-radius: 30px;
-  padding: 10px 20px;
-  margin-top: 5px;
-}
+
 
 .button-link {
   text-decoration: none;

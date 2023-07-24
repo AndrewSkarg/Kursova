@@ -12,7 +12,7 @@ configureWebpack: {
               options: {
                 name: '[name].[ext]',
                 outputPath: 'assets/img',
-                publicPath: '/assets/img' // Specify the public path for images
+                publicPath: '/assets/img' 
 
               }
             }

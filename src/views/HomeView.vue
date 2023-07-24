@@ -46,6 +46,7 @@ export default {
 }
 
 .panel {
+  margin-top: 3vw;
   font-size: 1.3vw;
   display: flex;
   justify-content: space-evenly;

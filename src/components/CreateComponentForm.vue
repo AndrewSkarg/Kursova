@@ -3,7 +3,7 @@
     <h2>Додати компонент</h2>
     <div class="form-group">
       <label for="add-title">Назва</label>
-      <input type="text" id="add-title" v-model="newComponent.title" :class="{ 'error-field': !isTitleValid }" />
+      <input type="text" id="add-title"  v-model="newComponent.title" :class="{ 'error-field': !isTitleValid }" />
       <span class="error-message" v-if="!isTitleValid">Обов'язкове поле. Виберіть назву.</span>
     </div>
     <div class="form-group">

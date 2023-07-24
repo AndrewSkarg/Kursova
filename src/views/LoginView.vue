@@ -2,13 +2,7 @@
   <div>
     <HeaderComponent />
     <div id="body">
-      <!-- <div class="loginBox">
-      <h1>Login</h1>
-      <input type="text" v-model="email" placeholder="пошта" />
-      <input type="text" v-model="password" placeholder="пароль" />
-
-      <input @click="loginUser" type="submit" value="Login" />
-    </div> -->
+      
 
       <div class="container">
         <h1 class="title">Аутентифікація</h1>

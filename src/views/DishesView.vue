@@ -10,9 +10,10 @@
           id="add-title"
           v-model="newDish.title"
           placeholder="введіть назву"
+          class= "custom-input" style="width: 25%; height: 10%;"
           required
         />
-        <select id="add-kind" v-model="newDish.kind">
+        <select id="add-kind" v-model="newDish.kind" class="custom-input" style="width: 25%; height: 10%;">
           <option value="" disabled selected>Оберіть опис</option>
           <option value="перше">перше</option>
           <option value="друге">друге</option>
@@ -20,7 +21,7 @@
           <option value="десерт">десерт</option>
         </select>
 
-        <select id="add-day" v-model="newDish.day">
+        <select id="add-day" v-model="newDish.day" class="custom-input" style="width: 25%; height: 10%;">
           <option value="" disabled selected>Оберіть день(опціонально)</option>
           <option value="1">понеділок</option>
           <option value="2">вівторок</option>
@@ -33,17 +34,17 @@
         </select>
 
 
-        <select id="add-time" v-model="newDish.time">
+        <select id="add-time" v-model="newDish.time" class="custom-input" style="width: 25%; height: 10%;">
           <option value="" disabled selected>Оберіть час прийому(опціонально)</option>
           <option value="сніданок">сніданок</option>
           <option value="обід">обід</option>
           <option value="вечеря">вечеря</option>
         </select>
-        <button v-on:click="createDish()">Добавити!</button>
+        <button v-on:click="createDish()" class="styled-button">Добавити!</button>
         <span style="color: red;">{{ isAddedDish }}</span>
       </div>
       <div>
-        <h2>Сортувати за полем "kind":</h2>
+        <h2>Сортувати за типом:</h2>
         <label>
           <input
             type="radio"
@@ -67,6 +68,7 @@
           type="text"
           v-model="searchQuery"
           placeholder="Введіть назву страви"
+          class= "custom-input" style="width: 25%; height: 10%;"
         />
       </div>
       <div>
@@ -76,7 +78,7 @@
             <div class="dish-info">
             <div  class="leftDiv">{{ dish.title }}</div> <div>{{ dish.kind }}</div>
             <button class="pig-trough" v-if="role==='шеф'" @click="deleteDish(dish.dish_id) ">
-             Віддати свиням 🐷
+             вилучити 🐷
             </button>
             </div>
           </li>
@@ -86,33 +88,6 @@
   </div>
 </template>
 
-<style scoped>
-
-.dish-info:hover{
-    min-width: 30vw;
-    color: #820000;
-    border: 1px solid orange;    
-}
-
-.leftDiv{
-    min-width: 30vw;
-}
-.pig-trough {
-  font-size: 24px;
-  background-color: #fddfdf;
-  border: none;
-  border-radius: 50%;
-  padding: 5px;
-  margin-left: 50px;
-  cursor: pointer;
-  
-}
-
-.dish-info {
-  display: flex;
-  justify-content: space-between; /* Добавлено для размещения элемента справа */
-}
-</style>
 
 
 
@@ -145,11 +120,7 @@ export default {
     };
   },
 
-  // mounted() {
-  //   this.newDish.day = this.$route.query.day;
-  //    this.newDish.time = this.$route.query.time;
-  //    this.newDish.kind = this.$route.query.kind;
-  // },
+  
   async created() {
     const prof = await PostService.getProfile();
     this.role = prof.data.Roles[0].name;
@@ -220,7 +191,7 @@ export default {
           this.isAddedDish = 'Введіть усі дані';
         }
       } catch (error) {
-        //this.error = error.response.status;
+        this.error = error.response.status;
         this.authorized = this.error === 401 ? false : true;
         this.isAddedDish = this.error === 409 ? 'Страва уже існує' : '';
       }
@@ -240,3 +211,31 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+.dish-info:hover{
+    min-width: 30vw;
+    color: #820000;
+    border: 1px solid orange;    
+}
+
+.leftDiv{
+    min-width: 30vw;
+}
+.pig-trough {
+  font-size: 24px;
+  background-color: #fddfdf;
+  border: none;
+  border-radius: 50%;
+  padding: 5px;
+  margin-left: 50px;
+  cursor:url('https://s1.iconbird.com/ico/1112/Koloria/w28h301351868928Trash.png'), pointer ;
+  
+}
+
+.dish-info {
+  display: flex;
+  justify-content: space-between; 
+}
+</style>
